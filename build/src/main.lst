@@ -1,0 +1,179 @@
+GAS LISTING /tmp/cckuoWqS.s 			page 1
+
+
+   1              		.file	"main.cpp"
+   2              		.option nopic
+   3              		.option norelax
+   4              		.attribute arch, "rv64i2p0_m2p0_a2p0"
+   5              		.attribute unaligned_access, 0
+   6              		.attribute stack_align, 16
+   7              		.text
+   8              	.Ltext0:
+   9              		.file 0 "/home/sybilvane/Desktop/programiranje/41f_OS_projekat" "src/main.cpp"
+  10              		.align	2
+  11              		.globl	_Z8userMainv
+  13              	_Z8userMainv:
+  14              	.LFB0:
+  15              		.file 1 "src/main.cpp"
+   1:src/main.cpp  **** //
+   2:src/main.cpp  **** // Created by sybilvane on 5/27/24.
+   3:src/main.cpp  **** //
+   4:src/main.cpp  **** #include "../lib/console.h"
+   5:src/main.cpp  **** 
+   6:src/main.cpp  **** void userMain(){
+  16              		.loc 1 6 16
+  17              		.cfi_startproc
+  18 0000 130101FF 		addi	sp,sp,-16
+  19              		.cfi_def_cfa_offset 16
+  20 0004 23341100 		sd	ra,8(sp)
+  21 0008 23308100 		sd	s0,0(sp)
+  22              		.cfi_offset 1, -8
+  23              		.cfi_offset 8, -16
+  24 000c 13040101 		addi	s0,sp,16
+  25              		.cfi_def_cfa 8, 0
+   7:src/main.cpp  ****     __putc('a');
+  26              		.loc 1 7 5
+  27              		.loc 1 7 11 is_stmt 0
+  28 0010 13051006 		li	a0,97
+  29 0014 97000000 		call	__putc
+  29      E7800000 
+  30              	.LVL0:
+   8:src/main.cpp  ****     __putc('b');
+  31              		.loc 1 8 5 is_stmt 1
+  32              		.loc 1 8 11 is_stmt 0
+  33 001c 13052006 		li	a0,98
+  34 0020 97000000 		call	__putc
+  34      E7800000 
+  35              	.LVL1:
+   9:src/main.cpp  ****     __putc('\n');
+  36              		.loc 1 9 5 is_stmt 1
+  37              		.loc 1 9 11 is_stmt 0
+  38 0028 1305A000 		li	a0,10
+  39 002c 97000000 		call	__putc
+  39      E7800000 
+  40              	.LVL2:
+  10:src/main.cpp  **** }
+  41              		.loc 1 10 1
+  42 0034 83308100 		ld	ra,8(sp)
+  43              		.cfi_restore 1
+  44 0038 03340100 		ld	s0,0(sp)
+  45              		.cfi_restore 8
+GAS LISTING /tmp/cckuoWqS.s 			page 2
+
+
+  46              		.cfi_def_cfa 2, 16
+  47 003c 13010101 		addi	sp,sp,16
+  48              		.cfi_def_cfa_offset 0
+  49 0040 67800000 		jr	ra
+  50              		.cfi_endproc
+  51              	.LFE0:
+  53              		.align	2
+  54              		.globl	main
+  56              	main:
+  57              	.LFB1:
+  11:src/main.cpp  **** 
+  12:src/main.cpp  **** void main(){
+  58              		.loc 1 12 12 is_stmt 1
+  59              		.cfi_startproc
+  60 0044 130101FF 		addi	sp,sp,-16
+  61              		.cfi_def_cfa_offset 16
+  62 0048 23341100 		sd	ra,8(sp)
+  63 004c 23308100 		sd	s0,0(sp)
+  64              		.cfi_offset 1, -8
+  65              		.cfi_offset 8, -16
+  66 0050 13040101 		addi	s0,sp,16
+  67              		.cfi_def_cfa 8, 0
+  13:src/main.cpp  ****     userMain();
+  68              		.loc 1 13 5
+  69              		.loc 1 13 13 is_stmt 0
+  70 0054 97000000 		call	_Z8userMainv
+  70      E7800000 
+  71              	.LVL3:
+  14:src/main.cpp  **** }...
+  72              		.loc 1 14 1
+  73 005c 83308100 		ld	ra,8(sp)
+  74              		.cfi_restore 1
+  75 0060 03340100 		ld	s0,0(sp)
+  76              		.cfi_restore 8
+  77              		.cfi_def_cfa 2, 16
+  78 0064 13010101 		addi	sp,sp,16
+  79              		.cfi_def_cfa_offset 0
+  80 0068 67800000 		jr	ra
+  81              		.cfi_endproc
+  82              	.LFE1:
+  84              	.Letext0:
+  85              		.file 2 "src/../lib/console.h"
+GAS LISTING /tmp/cckuoWqS.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.cpp
+     /tmp/cckuoWqS.s:13     .text:0000000000000000 _Z8userMainv
+     /tmp/cckuoWqS.s:17     .text:0000000000000000 .L0 
+     /tmp/cckuoWqS.s:18     .text:0000000000000000 $x
+     /tmp/cckuoWqS.s:18     .text:0000000000000000 .L0 
+     /tmp/cckuoWqS.s:19     .text:0000000000000004 .L0 
+     /tmp/cckuoWqS.s:22     .text:000000000000000c .L0 
+     /tmp/cckuoWqS.s:23     .text:000000000000000c .L0 
+     /tmp/cckuoWqS.s:25     .text:0000000000000010 .L0 
+     /tmp/cckuoWqS.s:27     .text:0000000000000010 .L0 
+     /tmp/cckuoWqS.s:28     .text:0000000000000010 .L0 
+     /tmp/cckuoWqS.s:32     .text:000000000000001c .L0 
+     /tmp/cckuoWqS.s:33     .text:000000000000001c .L0 
+     /tmp/cckuoWqS.s:37     .text:0000000000000028 .L0 
+     /tmp/cckuoWqS.s:38     .text:0000000000000028 .L0 
+     /tmp/cckuoWqS.s:42     .text:0000000000000034 .L0 
+     /tmp/cckuoWqS.s:43     .text:0000000000000038 .L0 
+     /tmp/cckuoWqS.s:45     .text:000000000000003c .L0 
+     /tmp/cckuoWqS.s:46     .text:000000000000003c .L0 
+     /tmp/cckuoWqS.s:48     .text:0000000000000040 .L0 
+     /tmp/cckuoWqS.s:50     .text:0000000000000044 .L0 
+     /tmp/cckuoWqS.s:56     .text:0000000000000044 main
+     /tmp/cckuoWqS.s:59     .text:0000000000000044 .L0 
+     /tmp/cckuoWqS.s:60     .text:0000000000000044 .L0 
+     /tmp/cckuoWqS.s:61     .text:0000000000000048 .L0 
+     /tmp/cckuoWqS.s:64     .text:0000000000000050 .L0 
+     /tmp/cckuoWqS.s:65     .text:0000000000000050 .L0 
+     /tmp/cckuoWqS.s:67     .text:0000000000000054 .L0 
+     /tmp/cckuoWqS.s:69     .text:0000000000000054 .L0 
+     /tmp/cckuoWqS.s:70     .text:0000000000000054 .L0 
+     /tmp/cckuoWqS.s:73     .text:000000000000005c .L0 
+     /tmp/cckuoWqS.s:74     .text:0000000000000060 .L0 
+     /tmp/cckuoWqS.s:76     .text:0000000000000064 .L0 
+     /tmp/cckuoWqS.s:77     .text:0000000000000064 .L0 
+     /tmp/cckuoWqS.s:79     .text:0000000000000068 .L0 
+     /tmp/cckuoWqS.s:81     .text:000000000000006c .L0 
+     /tmp/cckuoWqS.s:350    .debug_line_str:0000000000000043 .L0 
+     /tmp/cckuoWqS.s:350    .debug_line_str:0000000000000079 .L0 
+     /tmp/cckuoWqS.s:350    .debug_line_str:000000000000007d .L0 
+     /tmp/cckuoWqS.s:350    .debug_line_str:0000000000000088 .L0 
+     /tmp/cckuoWqS.s:350    .debug_line_str:0000000000000091 .L0 
+     /tmp/cckuoWqS.s:350    .debug_line_str:000000000000009a .L0 
+     /tmp/cckuoWqS.s:86     .text:000000000000006c .L0 
+     /tmp/cckuoWqS.s:172    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cckuoWqS.s:337    .debug_str:0000000000000016 .LASF4
+     /tmp/cckuoWqS.s:346    .debug_line_str:0000000000000000 .LASF0
+     /tmp/cckuoWqS.s:348    .debug_line_str:000000000000000d .LASF1
+     /tmp/cckuoWqS.s:8      .text:0000000000000000 .Ltext0
+     /tmp/cckuoWqS.s:84     .text:000000000000006c .Letext0
+     /tmp/cckuoWqS.s:331    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cckuoWqS.s:343    .debug_str:0000000000000102 .LASF5
+     /tmp/cckuoWqS.s:339    .debug_str:00000000000000f8 .LASF6
+     /tmp/cckuoWqS.s:341    .debug_str:00000000000000fd .LASF2
+     /tmp/cckuoWqS.s:57     .text:0000000000000044 .LFB1
+     /tmp/cckuoWqS.s:82     .text:000000000000006c .LFE1
+     /tmp/cckuoWqS.s:71     .text:000000000000005c .LVL3
+GAS LISTING /tmp/cckuoWqS.s 			page 4
+
+
+     /tmp/cckuoWqS.s:333    .debug_str:0000000000000000 .LASF3
+     /tmp/cckuoWqS.s:335    .debug_str:0000000000000009 .LASF7
+     /tmp/cckuoWqS.s:14     .text:0000000000000000 .LFB0
+     /tmp/cckuoWqS.s:51     .text:0000000000000044 .LFE0
+     /tmp/cckuoWqS.s:30     .text:000000000000001c .LVL0
+     /tmp/cckuoWqS.s:35     .text:0000000000000028 .LVL1
+     /tmp/cckuoWqS.s:40     .text:0000000000000034 .LVL2
+     /tmp/cckuoWqS.s:87     .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+__putc
