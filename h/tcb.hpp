@@ -6,54 +6,55 @@
 #define INC_41F_OS_PROJEKAT_TCB_H
 
 #include "../lib/hw.h"
-#include "../h/scheduler.hpp"
+#include "Scheduler.hpp"
+#include "riscv.hpp"
+#include "../lib/mem.h"
 
-class tcb {
+//extern "C" void pushRegisters();
+//extern "C" void popRegisters();
+//extern "C" void contextSwitch();
+
+class TCB {
 public:
-    static tcb* running;
-
-    // alias for function pointer that points to func that
-    // takes no arguments and returns 'void'
+    static TCB* running;
     using Body = void (*)();
 
-    bool isFinished() const {
-        return finished;
-    };
-    void setFinished(bool finished) {
-        tcb::finished = finished;
-    };
+    ~TCB() { delete[] stack; }
 
-    static tcb* createThread(Body body);
+    bool isFinished() const { return finished; }
+    void setFinished(bool value) { finished = value; }
+    uint64 getTimeSlice() const { return timeSlice; }
+    static TCB* createThread(Body body);
     static void yield();
 
-
 private:
-    tcb(Body body) :
-        body(body),
-        stack(new uint64[STACK_SIZE]),
-        context({
-            (uint64) body,
-            (uint64) &stack[STACK_SIZE] // grows towards decreasing memory
-        })
-    {
-        scheduler::put(this);
-    }
-
     struct Context {
         uint64 ra;
         uint64 sp;
     };
+
     Body body;
     uint64* stack;
+    uint64 timeSlice;
     Context context;
     bool finished;
 
-    // although CLion marks 'contextSwitch' as unimplemented, it is,
-    // in contextSwitch.S
-    static void contextSwitch(Context* oldContext, Context* runningContext);
-    static void dispatch();
+    explicit TCB(Body body, uint64 timeSlice) :
+        body(body),
+        stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
+        timeSlice(timeSlice),
+        context({ body != nullptr ? (uint64) body : 0,
+                  stack != nullptr ? (uint64) &stack[DEFAULT_STACK_SIZE] : 0
+        }),
+        finished(false)
+    {
+        if (body != nullptr) {
+//            Scheduler::put(this);
+        }
+    }
 
-    static uint64 constexpr STACK_SIZE = 1024;
+    static void contextSwitch(Context* oldContext, Context* newContext);
+    static void dispatch();
 };
 
 

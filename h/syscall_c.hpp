@@ -7,17 +7,18 @@
 
 #include "../lib/hw.h"
 #include "tcb.hpp"
-#include "sem.hpp"
+#include "mySemaphore.hpp"
+#include "Scheduler.hpp"
 
 void* mem_alloc(size_t size);
-int mem_free(void*);
+int mem_free(void* alloc_space);
 
-typedef tcb* thread_t;
+typedef TCB* thread_t;
 int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg);
 int thread_exit();
 void thread_dispatch();
 
-typedef sem* sem_t;
+typedef mySemaphore* sem_t;
 int sem_close(sem_t handle);
 int sem_wait(sem_t id);
 int sem_signal(sem_t id);

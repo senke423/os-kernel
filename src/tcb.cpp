@@ -4,23 +4,23 @@
 
 #include "../h/tcb.hpp"
 
+TCB* TCB::running = nullptr;
 
-void tcb::yield() {
-    pushRegisters();
-    dispatch();
-    popRegisters();
+TCB* TCB::createThread(TCB::Body body) {
+//    return new TCB(body);
+    return nullptr;
 }
 
-void tcb::dispatch() {
-    tcb* old = running;
-    if (!old->isFinished())
-        scheduler::put(old);
-    running = scheduler::get();
-
-    tcb::contextSwitch(&old->context, &running->context);
+void TCB::yield() {
+//    pushRegisters();
+//    dispatch();
+//    popRegisters();
 }
 
-tcb *tcb::createThread(tcb::Body body) {
-    return new tcb(body);
+void TCB::dispatch() {
+    TCB* old = running;
+    if (!old->isFinished()){
+        Scheduler::put(old);
+    }
+//    contextSwitch(&old->context, &running->context);
 }
-
