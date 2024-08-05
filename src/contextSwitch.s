@@ -1,6 +1,6 @@
 .global contextSwitch
 .type contextSwitch, @function
-.contextSwitch:
+contextSwitch:
     # a0 -> &old->context
     # a1 -> &running->context
     sd ra, 0 * 8(a0)

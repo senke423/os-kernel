@@ -12,4 +12,5 @@ void userMain(){
 
 void main(){
     userMain();
+    riscv::close_riscv_emulation();
 }
