@@ -5,6 +5,9 @@
 #include "../h/syscall_c.hpp"
 
 void* mem_alloc(size_t size){
+    if (size == 0)
+        return nullptr;
+
     // size argument should be converted to BLOCKS
     size_t no_of_blocks;
 

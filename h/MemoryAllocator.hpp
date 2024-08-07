@@ -8,19 +8,26 @@
 #include "../lib/hw.h"
 
 class MemoryAllocator {
-    MemoryAllocator(){}
+public:
+
+    static void initialize();
+    static void* mem_alloc(size_t size);
+    static int mem_free(void* chunk);
 
     typedef struct Chunk {
         Chunk* next;
         Chunk* prev;
-        size_t size;
+        size_t size; // in BLOCKS
     } Chunk;
 
+    static Chunk* free_head;
 
-public:
+    MemoryAllocator(const MemoryAllocator& memAlloc) = delete;
+    MemoryAllocator& operator=(const MemoryAllocator& memAlloc) = delete;
+private:
 
-    static void* mem_alloc(size_t size);
-    static int mem_free(void* chunk);
+    MemoryAllocator() {};
+    static void merge();
 };
 
 
