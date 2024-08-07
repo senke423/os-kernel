@@ -118,7 +118,7 @@ inline void riscv::mc_sstatus(uint64 mask) {
     __asm__ volatile ("csrc sstatus, %[mask]" : : [mask] "r"(mask));
 }
 
-void riscv::popSppSpie() {
+void riscv::pop_spp_spie() {
     if (userMode){
         mc_sstatus(SSTATUS_SPP);
     } else {
@@ -137,4 +137,14 @@ void riscv::close_riscv_emulation() {
     __asm__ volatile ("addi t0, %[close_code], 0" : : [close_code] "r"(close_code));
     __asm__ volatile ("li t1, 0x100000");
     __asm__ volatile ("sw t0, 0(t1)");
+}
+
+inline uint64 riscv::r_sscratch() {
+    uint64 volatile ret;
+    __asm__ volatile ("csrr %[ret], sscratch" : [ret] "=r"(ret));
+    return ret;
+}
+
+void riscv::w_sscratch(uint64 sscratch) {
+    __asm__ volatile ("csrw sscratch, %[sscratch]" : : [sscratch] "r"(sscratch));
 }

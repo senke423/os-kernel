@@ -5,9 +5,12 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../h/LinkedList.hpp"
 #include "../h/riscv.hpp"
+#include "../lib/console.h"
 
 void userMain(){
-
+    __putc('o');
+    __putc('k');
+    __putc('\n');
 }
 
 void main(){

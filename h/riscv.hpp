@@ -14,7 +14,7 @@ public:
     static void close_riscv_emulation();
 
     // pops sstatus.spp and sstatus.spie bits
-    static void popSppSpie();
+    static void pop_spp_spie();
 
     static uint64 r_scause();
     static void w_scause(uint64 scause);
@@ -26,6 +26,8 @@ public:
     static void w_stval(uint64 stval);
     static uint64 r_sstatus();
     static void w_sstatus(uint64 sstatus);
+    static uint64 r_sscratch();
+    static void w_sscratch(uint64 sscratch);
     static uint64 r_sip();
     static void w_sip(uint64 sip);
 
