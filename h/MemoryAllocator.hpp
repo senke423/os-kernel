@@ -11,7 +11,7 @@ class MemoryAllocator {
 public:
 
     static void initialize();
-    static void* mem_alloc(size_t size);
+    [[nodiscard]] static void* mem_alloc(size_t size);
     static int mem_free(void* chunk);
 
     typedef struct Chunk {
@@ -25,6 +25,7 @@ public:
     MemoryAllocator(const MemoryAllocator& memAlloc) = delete;
     MemoryAllocator& operator=(const MemoryAllocator& memAlloc) = delete;
 private:
+    const static int ALG_ERR = -5;
 
     MemoryAllocator() {};
     static void merge();

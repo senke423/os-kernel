@@ -7,6 +7,7 @@
 
 #include "../lib/hw.h"
 #include "../lib/console.h"
+#include "MemoryAllocator.hpp"
 
 class riscv {
 public:
@@ -61,8 +62,24 @@ private:
     const static uint64 ECALL_USER_MODE = 0x0000000000000008UL;
     const static uint64 ECALL_KERNEL_MODE = 0x0000000000000009UL;
 
+    const static uint64 MEM_ALLOC = 0x01;
+    const static uint64 MEM_FREE = 0x02;
+    const static uint64 THREAD_CREATE = 0x11;
+    const static uint64 THREAD_EXIT = 0x12;
+    const static uint64 THREAD_DISPATCH = 0x13;
+    const static uint64 SEM_OPEN = 0x21;
+    const static uint64 SEM_CLOSE = 0x22;
+    const static uint64 SEM_WAIT = 0x23;
+    const static uint64 SEM_SIGNAL = 0x24;
+    const static uint64 SEM_TIMEDWAIT = 0x25;
+    const static uint64 SEM_TRYWAIT = 0x26;
+    const static uint64 TIME_SLEEP = 0x31;
+    const static uint64 GETC = 0x41;
+    const static uint64 PUTC = 0x42;
+
     const static uint32 KEYBOARD_INT_NO = 0x0a;
 
+    static uint64 retrieve_param(uint8 offset);
     static void handleSupervisorTrap();
 
     static bool userMode;

@@ -20,7 +20,44 @@ void riscv::handleSupervisorTrap() {
 
     }
     else if (scause == ECALL_USER_MODE || scause == ECALL_KERNEL_MODE){
-
+//        uint64 a1 = retrieve_param(1);
+//        uint64 a2 = retrieve_param(2);
+//        uint64 a3 = retrieve_param(3);
+//        uint64 a4 = retrieve_param(4);
+        switch(scause){
+            case MEM_ALLOC:
+//                MemoryAllocator::mem_alloc(a1);
+                break;
+            case MEM_FREE:
+                break;
+            case THREAD_CREATE:
+                break;
+            case THREAD_EXIT:
+                break;
+            case THREAD_DISPATCH:
+                break;
+            case SEM_OPEN:
+                break;
+            case SEM_CLOSE:
+                break;
+            case SEM_WAIT:
+                break;
+            case SEM_SIGNAL:
+                break;
+            case SEM_TIMEDWAIT:
+                break;
+            case SEM_TRYWAIT:
+                break;
+            case TIME_SLEEP:
+                break;
+            case GETC:
+                break;
+            case PUTC:
+                break;
+            default:
+                // unknown code
+                break;
+        }
     }
     else if (scause == SUP_SOFT_INT){
         // interrupt: yes, supervisor software interrupt (timer)
@@ -147,4 +184,11 @@ inline uint64 riscv::r_sscratch() {
 
 void riscv::w_sscratch(uint64 sscratch) {
     __asm__ volatile ("csrw sscratch, %[sscratch]" : : [sscratch] "r"(sscratch));
+}
+
+inline uint64 riscv::retrieve_param(uint8 index) {
+    uint64 volatile param;
+    uint8 offset = index*8 + 80;
+    __asm__ volatile ("ld %[param], %[offset](s0)" : [param] "=r"(param) : [offset] "r"(offset));
+    return param;
 }

@@ -8,6 +8,10 @@
 #include "../lib/console.h"
 
 void userMain(){
+    MemoryAllocator::initialize();
+    void* ptr = MemoryAllocator::mem_alloc(100);
+    MemoryAllocator::mem_free(ptr);
+
     __putc('o');
     __putc('k');
     __putc('\n');
