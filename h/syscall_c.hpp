@@ -6,7 +6,7 @@
 #define INC_41F_OS_PROJEKAT_SYSCALL_C_HPP
 
 #include "../lib/hw.h"
-#include "tcb.hpp"
+#include "Thread.hpp"
 #include "mySemaphore.hpp"
 #include "Scheduler.hpp"
 

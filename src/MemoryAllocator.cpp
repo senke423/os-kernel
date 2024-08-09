@@ -135,7 +135,3 @@ void MemoryAllocator::initialize() {
     free_head->prev = nullptr;
     free_head->size = ((uint64)HEAP_END_ADDR - (uint64)HEAP_START_ADDR)/MEM_BLOCK_SIZE;
 }
-
-void MemoryAllocator::merge() {
-
-}

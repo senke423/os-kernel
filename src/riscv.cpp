@@ -20,13 +20,19 @@ void riscv::handleSupervisorTrap() {
 
     }
     else if (scause == ECALL_USER_MODE || scause == ECALL_KERNEL_MODE){
-//        uint64 a1 = retrieve_param(1);
+        uint64 sepc = r_sepc() + 4;
+        uint64 sstatus = r_sstatus();
+
+        uint64 a0 = retrieve_param(0); // code
+        uint64 a1 = retrieve_param(1);
 //        uint64 a2 = retrieve_param(2);
 //        uint64 a3 = retrieve_param(3);
 //        uint64 a4 = retrieve_param(4);
-        switch(scause){
+        switch(a0){
             case MEM_ALLOC:
-//                MemoryAllocator::mem_alloc(a1);
+                MemoryAllocator::mem_alloc(a1);
+                w_sepc(sepc);
+                w_sstatus(sstatus);
                 break;
             case MEM_FREE:
                 break;
@@ -56,6 +62,9 @@ void riscv::handleSupervisorTrap() {
                 break;
             default:
                 // unknown code
+                __putc('E');
+                __putc('R');
+                __putc('R');
                 break;
         }
     }
@@ -182,13 +191,14 @@ inline uint64 riscv::r_sscratch() {
     return ret;
 }
 
-void riscv::w_sscratch(uint64 sscratch) {
+inline void riscv::w_sscratch(uint64 sscratch) {
     __asm__ volatile ("csrw sscratch, %[sscratch]" : : [sscratch] "r"(sscratch));
 }
 
 inline uint64 riscv::retrieve_param(uint8 index) {
     uint64 volatile param;
-    uint8 offset = index*8 + 80;
-    __asm__ volatile ("ld %[param], %[offset](s0)" : [param] "=r"(param) : [offset] "r"(offset));
+    uint64 volatile offset = index*8 + 80;
+    __asm__ volatile ("add t0, %[offset], s0" : : [offset]"r"(offset) : "t0");
+    __asm__ volatile ("ld %0, 0(t0)" : "=r"(param));
     return param;
 }

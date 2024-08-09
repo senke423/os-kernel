@@ -56,11 +56,11 @@ public:
 private:
     const static uint64 SUP_SOFT_INT = 0x8000000000000001UL;
     const static uint64 SUP_EXT_INT = 0x8000000000000009UL;
-    const static uint64 ILLEGAL_INSTR = 0x0000000000000002UL;
-    const static uint64 UNAUTH_READ = 0x0000000000000005UL;
-    const static uint64 UNAUTH_WRITE = 0x0000000000000007UL;
-    const static uint64 ECALL_USER_MODE = 0x0000000000000008UL;
-    const static uint64 ECALL_KERNEL_MODE = 0x0000000000000009UL;
+    const static uint64 ILLEGAL_INSTR = 0x2UL;
+    const static uint64 UNAUTH_READ = 0x5UL;
+    const static uint64 UNAUTH_WRITE = 0x7UL;
+    const static uint64 ECALL_USER_MODE = 0x8UL;
+    const static uint64 ECALL_KERNEL_MODE = 0x9UL;
 
     const static uint64 MEM_ALLOC = 0x01;
     const static uint64 MEM_FREE = 0x02;
