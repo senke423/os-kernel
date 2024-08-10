@@ -28,18 +28,19 @@ void *MemoryAllocator::mem_alloc(size_t size) {
     if (!sel)
         return nullptr;
 
-    Chunk* new_free_fragment = (Chunk*)sel + size * MEM_BLOCK_SIZE;
-    new_free_fragment->size = sel->size - size;
-    new_free_fragment->next = sel->next;
-    new_free_fragment->prev = prev;
-
-    if (new_free_fragment->size == 0){
+    if (sel->size == size) {
         // no fragmentation
-        if (prev)
-            prev->next = new_free_fragment->next;
-        else
+        if (prev){
+            prev->next = sel->next;
+        }
+        else {
             free_head = nullptr;
+        }
     } else {
+        Chunk* new_free_fragment = (Chunk*)((char*)sel + size * MEM_BLOCK_SIZE);
+        new_free_fragment->size = sel->size - size;
+        new_free_fragment->next = sel->next;
+        new_free_fragment->prev = prev;
         if (prev)
             prev->next = new_free_fragment;
         else
@@ -47,14 +48,14 @@ void *MemoryAllocator::mem_alloc(size_t size) {
     }
 
     sel->size = size;
-    Chunk* ptr = sel + 1;
-    return ptr;
+    return sel;
 }
 
 int MemoryAllocator::mem_free(void* chunk) {
-    // It's offset by 1 address because the first block
-    // has the linked list header
-    Chunk* sel = (Chunk*)chunk - 1;
+    if (chunk == nullptr)
+        return 0;
+
+    Chunk* sel = (Chunk*)chunk;
 
     if (sel < (Chunk*)HEAP_START_ADDR || sel > (Chunk*)HEAP_END_ADDR)
         return -1;
@@ -81,12 +82,12 @@ int MemoryAllocator::mem_free(void* chunk) {
     while (iter != nullptr){
         if (iter < sel)
             before = iter;
-        if (iter > sel)
+        if (iter > sel && after == nullptr)
             after = iter;
 
-        if (iter + iter->size == sel)
+        if ((char*)iter + iter->size*MEM_BLOCK_SIZE == (char*)sel)
             left_overlap = true;
-        if (sel + sel->size == iter)
+        if ((char*)sel + sel->size*MEM_BLOCK_SIZE == (char*)iter)
             right_overlap = true;
 
         iter = iter->next;
@@ -99,10 +100,14 @@ int MemoryAllocator::mem_free(void* chunk) {
         // No merging needed.
         if (before){
             sel->prev = before;
+            before->next = sel;
         } else {
             free_head = sel;
             sel->prev = nullptr;
         }
+
+        if (after)
+            after->prev = sel;
 
         sel->next = after;
     }
@@ -124,6 +129,8 @@ int MemoryAllocator::mem_free(void* chunk) {
 
         if (!after->prev)
             free_head = sel;
+        else
+            sel->prev->next = sel;
     }
 
     return 0;
@@ -133,5 +140,5 @@ void MemoryAllocator::initialize() {
     free_head = (Chunk*)HEAP_START_ADDR;
     free_head->next = nullptr;
     free_head->prev = nullptr;
-    free_head->size = ((uint64)HEAP_END_ADDR - (uint64)HEAP_START_ADDR)/MEM_BLOCK_SIZE;
+    free_head->size = ((char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - sizeof(Chunk))/MEM_BLOCK_SIZE;
 }

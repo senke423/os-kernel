@@ -25,8 +25,6 @@ public:
     MemoryAllocator(const MemoryAllocator& memAlloc) = delete;
     MemoryAllocator& operator=(const MemoryAllocator& memAlloc) = delete;
 private:
-    const static int ALG_ERR = -5;
-
     MemoryAllocator() {};
 };
 
