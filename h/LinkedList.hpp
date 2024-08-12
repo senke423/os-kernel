@@ -70,7 +70,7 @@ Type LinkedList<Type>::remove(size_t index) {
         return pop();
 
     Element* iter = head;
-    for (int i = 0; i < index; i++)
+    for (size_t i = 0; i < index; i++)
         iter = iter->next;
 
     iter->previous->next = iter->next;
@@ -109,7 +109,7 @@ Type LinkedList<Type>::peek(size_t index) {
     if (index >= len)
         return nullptr;
     Element* curr = head;
-    for (int i = 0; i < index; i++){
+    for (size_t i = 0; i < index; i++){
         curr = curr->next;
     }
     Type ret = curr->data;
@@ -149,7 +149,7 @@ bool LinkedList<Type>::add(Type data, size_t index) {
         return true;
     }
     Element* curr = head;
-    for (int i = 0; i < index; i++){
+    for (size_t i = 0; i < index; i++){
         curr = curr->next;
     }
     Element* temp = new Element(data);

@@ -13,29 +13,30 @@
 class TCB {
 public:
     static TCB* running;
-    using Body = void (*)();
+    using subroutine = void (*)(void*);
 
     ~TCB() { delete[] stack; }
 
     bool isFinished() const { return finished; }
     void setFinished(bool value) { finished = value; }
     uint64 getTimeSlice() const { return timeSlice; }
-    static TCB* createThread(Body body);
+    static TCB* createThread(subroutine body);
     static void yield();
 
-private:
     struct Context {
         uint64 ra;
         uint64 sp;
     };
 
-    Body body;
+private:
+
+    subroutine body;
     uint64* stack;
     uint64 timeSlice;
     Context context;
     bool finished;
 
-    explicit TCB(Body body, uint64 timeSlice) :
+    explicit TCB(subroutine body, uint64 timeSlice) :
         body(body),
         stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
         timeSlice(timeSlice),
@@ -49,9 +50,9 @@ private:
         }
     }
 
-    static void contextSwitch(Context* oldContext, Context* newContext);
     static void dispatch();
 };
 
+extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext);
 
 #endif //INC_41F_OS_PROJEKAT_TCB_H

@@ -6,8 +6,8 @@
 #include "../h/LinkedList.hpp"
 #include "../h/riscv.hpp"
 
-extern "C" void supervisorTrap();
 extern void userMain();
+extern "C" void supervisorTrap();
 
 void init_kernel(){
     MemoryAllocator::initialize();
