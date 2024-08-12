@@ -3,12 +3,12 @@
 //
 
 #include "../h/syscall_c.hpp"
+#include "../lib/printing.hpp"
 
 void* mem_alloc(size_t size){
     if (size == 0)
         return nullptr;
 
-    // size argument should be converted to BLOCKS
     size_t no_of_blocks;
 
     // take ceil of quotient
@@ -26,7 +26,7 @@ void* mem_alloc(size_t size){
 
 int mem_free(void* alloc_space){
     if (alloc_space == nullptr)
-        return NULL_PTR;
+        return NULL_PTR_ERR;
 
     uint64 code = 0x02;
     __asm__ volatile ("mv a1, %[alloc_space]" : : [alloc_space] "r"(alloc_space));

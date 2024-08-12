@@ -10,10 +10,6 @@
 #include "riscv.hpp"
 #include "../lib/mem.h"
 
-//extern "C" void pushRegisters();
-//extern "C" void popRegisters();
-//extern "C" void contextSwitch();
-
 class TCB {
 public:
     static TCB* running;

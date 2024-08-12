@@ -7,7 +7,7 @@
 MemoryAllocator::Chunk* MemoryAllocator::free_head = nullptr;
 
 void *MemoryAllocator::mem_alloc(size_t size) {
-    size % MEM_BLOCK_SIZE == 0 ? size = size/MEM_BLOCK_SIZE : size = size/MEM_BLOCK_SIZE + 1;
+//    size % MEM_BLOCK_SIZE == 0 ? size = size/MEM_BLOCK_SIZE : size = size/MEM_BLOCK_SIZE + 1;
 
     Chunk* prev = nullptr;
     Chunk* iter = free_head;

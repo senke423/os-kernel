@@ -6,13 +6,13 @@
 #define INC_41F_OS_PROJEKAT_SYSCALL_C_HPP
 
 #include "../lib/hw.h"
-#include "Thread.hpp"
+#include "TCB.hpp"
 #include "mySemaphore.hpp"
 #include "Scheduler.hpp"
 
 const static int SEMDEAD = -1;
 const static int TIMEOUT = -2;
-const static int NULL_PTR = -3;
+const static int NULL_PTR_ERR = -3;
 
 void* mem_alloc(size_t size);
 int mem_free(void* alloc_space);

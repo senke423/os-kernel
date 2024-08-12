@@ -1,9 +1,10 @@
-.align 4
 .global supervisorTrap
 .extern handleSupervisorTrap
+
+.align 4
 .type supervisorTrap, @function
 supervisorTrap:
-    add sp, sp, -256
+    addi sp, sp, -256
     .irp index, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
     sd x\index, \index * 8(sp)
     .endr

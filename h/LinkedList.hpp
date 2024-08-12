@@ -8,15 +8,16 @@
 #include "../lib/hw.h"
 #include "../lib/mem.h"
 #include "../lib/console.h"
+#include "../lib/printing.hpp"
 
 template<typename Type>
 class LinkedList {
-    typedef struct Element {
+    struct Element {
         Type data;
         Element* next;
         Element* previous;
 
-        Element(Type data){
+        explicit Element(Type data){
             this->data = data;
             next = previous = nullptr;
         }
@@ -24,7 +25,7 @@ class LinkedList {
         Element(){
             next = previous = nullptr;
         }
-    } Element;
+    };
 
     Element* head;
     Element* tail;
@@ -38,12 +39,82 @@ public:
 
     void push(Type data);
     bool add(Type data, size_t index);
-    Element remove(size_t index);
-    Element pop();
-    Element* peek(size_t index);
+    Type remove(size_t index);
+    Type pop();
+    Type peek(size_t index);
+    size_t getLen();
 
     void print();
 };
+
+template<typename Type>
+size_t LinkedList<Type>::getLen() {
+    return len;
+}
+
+template<typename Type>
+Type LinkedList<Type>::remove(size_t index) {
+    if (index >= len || !len)
+        return nullptr;
+
+    if (index == 0){
+        Type ret = head->data;
+        Element* tmp = head;
+        head = head->next;
+
+        delete tmp;
+        return ret;
+    }
+
+    if (index == len - 1)
+        return pop();
+
+    Element* iter = head;
+    for (int i = 0; i < index; i++)
+        iter = iter->next;
+
+    iter->previous->next = iter->next;
+    iter->next->previous = iter->previous;
+    Type ret = iter->data;
+
+    delete iter;
+    return ret;
+}
+
+template<typename Type>
+Type LinkedList<Type>::pop() {
+    if (!len)
+        return nullptr;
+
+    Element* iter = head;
+    while (iter->next != nullptr){
+        iter = iter->next;
+    }
+
+    if (iter->previous){
+        iter->previous->next = nullptr;
+    } else {
+        head = nullptr;
+    }
+
+    Type ret = iter->data;
+    delete iter;
+
+    len--;
+    return ret;
+}
+
+template<typename Type>
+Type LinkedList<Type>::peek(size_t index) {
+    if (index >= len)
+        return nullptr;
+    Element* curr = head;
+    for (int i = 0; i < index; i++){
+        curr = curr->next;
+    }
+    Type ret = curr->data;
+    return ret;
+}
 
 template<typename Type>
 void LinkedList<Type>::print() {
@@ -55,18 +126,7 @@ void LinkedList<Type>::print() {
     }
 }
 
-template<typename Type>
-typename LinkedList<Type>::Element *LinkedList<Type>::peek(size_t index) {
-    if (index >= len)
-        return nullptr;
-    Element* temp = new Element();
-    Element* curr = head;
-    for (int i = 0; i < index; i++){
-        curr = curr->next;
-    }
-    temp->data = curr->data;
-    return temp;
-}
+
 
 template<typename Type>
 bool LinkedList<Type>::add(Type data, size_t index) {
@@ -74,9 +134,13 @@ bool LinkedList<Type>::add(Type data, size_t index) {
         return false;
     if (index == 0){
         Element* temp = new Element(data);
-        head->previous = temp;
-        temp->next = head;
+
+        if (len){
+            head->previous = temp;
+            temp->next = head;
+        }
         head = temp;
+
         len++;
         return true;
     }

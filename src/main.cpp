@@ -5,14 +5,17 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../h/LinkedList.hpp"
 #include "../h/riscv.hpp"
-#include "../lib/console.h"
 
-void userMain(){
+extern "C" void supervisorTrap();
+extern void userMain();
 
+void init_kernel(){
+    MemoryAllocator::initialize();
+//    riscv::w_stvec((uint64)supervisorTrap);
 }
 
 void main(){
-    MemoryAllocator::initialize();
+    init_kernel();
 
     userMain();
 

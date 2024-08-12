@@ -2,7 +2,7 @@
 // Created by sybilvane on 7/29/24.
 //
 
-#include "../h/Thread.hpp"
+#include "../h/TCB.hpp"
 
 TCB* TCB::running = nullptr;
 
