@@ -19,5 +19,15 @@ void userMain(){
 //    delete[] arr;
 
     // Thread tests
+
+    // if all went well:
+    __putc('-');
+    __putc('-');
+    __putc('\n');
+    __putc('o');
     __putc('k');
+    __putc('\n');
+    __putc('-');
+    __putc('-');
+    __putc('\n');
 }
