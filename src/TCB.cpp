@@ -5,22 +5,35 @@
 #include "../h/TCB.hpp"
 
 TCB* TCB::running = nullptr;
+uint64 TCB::timeSliceCnt = 0;
 
-TCB* TCB::createThread(TCB::Body body) {
-//    return new TCB(body);
-    return nullptr;
+void TCB::dispatch() {
+    TCB::timeSliceCnt = 0;
+    TCB* old = running;
+    if (!old->isFinished() && !old->isAsleep() && !old->isBlocked()){
+        Scheduler::put(old);
+    }
+
+    contextSwitch(&old->context, &running->context);
+}
+
+int TCB::createThread(TCB **handle, TCB::subroutine subroutine, void *arg, void *stack_space) {
+    *handle = new TCB(subroutine, arg, stack_space, DEFAULT_TIME_SLICE);
+    if (!*handle)
+        return THREAD_CREATE_ERR;
+
+    // put this newly created thread in the Scheduler queue
+    Scheduler::put(*handle);
+    return 0;
+}
+
+void TCB::thread_wrapper() {
+    riscv::pop_spp_spie();
+    running->body(running->arg);
+    running->setFinished(true);
+    TCB::yield();
 }
 
 void TCB::yield() {
-//    pushRegisters();
-//    dispatch();
-//    popRegisters();
-}
-
-void TCB::dispatch() {
-    TCB* old = running;
-    if (!old->isFinished()){
-        Scheduler::put(old);
-    }
-//    contextSwitch(&old->context, &running->context);
+    __asm__ volatile ("ecall");
 }

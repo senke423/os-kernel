@@ -18,39 +18,53 @@ public:
     ~TCB() { delete[] stack; }
 
     bool isFinished() const { return finished; }
-    void setFinished(bool value) { finished = value; }
+    void setFinished(bool val) { finished = val; }
+    bool isBlocked() const { return blocked; }
+    void setBlocked(bool val) { blocked = val; }
+    bool isAsleep() const { return asleep; }
+    void setAsleep(bool val) { asleep = val; }
+
     uint64 getTimeSlice() const { return timeSlice; }
-    static TCB* createThread(subroutine body);
-    static void yield();
+    static int createThread(TCB** handle, subroutine subroutine, void* arg, void* stack_space);
 
     struct Context {
         uint64 ra;
         uint64 sp;
     };
+    static uint64 timeSliceCnt;
 
 private:
+    friend class riscv;
+
+    const static int THREAD_CREATE_ERR = -20;
+
+    uint64* stack;
+    void* arg;
 
     subroutine body;
-    uint64* stack;
     uint64 timeSlice;
     Context context;
     bool finished;
+    bool blocked;
+    bool asleep;
 
-    explicit TCB(subroutine body, uint64 timeSlice) :
-        body(body),
+    explicit TCB(subroutine body, void* arg, void* stack_space, uint64 timeSlice) :
         stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
+        arg(arg),
+        body(body),
         timeSlice(timeSlice),
-        context({ body != nullptr ? (uint64) body : 0,
-                  stack != nullptr ? (uint64) &stack[DEFAULT_STACK_SIZE] : 0
+        context({ (uint64) &thread_wrapper,
+                  (uint64) stack_space
         }),
-        finished(false)
-    {
-        if (body != nullptr) {
-//            Scheduler::put(this);
-        }
-    }
+        finished(false),
+        blocked(false),
+        asleep(false)
+    {}
 
     static void dispatch();
+    static void yield();
+    static void thread_wrapper();
+
 };
 
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext);

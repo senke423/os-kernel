@@ -8,11 +8,19 @@
 #include "../lib/hw.h"
 #include "../lib/console.h"
 #include "MemoryAllocator.hpp"
+#include "TCB.hpp"
+
+extern "C" void pushRegisters();
+extern "C" void popRegisters();
 
 class riscv {
 public:
 
     static void close_riscv_emulation();
+
+    // defined in registersUtil.asm
+    static void pushRegisters();
+    static void popRegisters();
 
     // pops sstatus.spp and sstatus.spie bits
     static void pop_spp_spie();
@@ -60,8 +68,8 @@ private:
     const static uint64 ECALL_USER_MODE = 0x8UL;
     const static uint64 ECALL_KERNEL_MODE = 0x9UL;
 
-    const static uint64 MEM_ALLOC = 0x01;
-    const static uint64 MEM_FREE = 0x02;
+    const static uint64 MEM_ALLOC = 0x1;
+    const static uint64 MEM_FREE = 0x2;
     const static uint64 THREAD_CREATE = 0x11;
     const static uint64 THREAD_EXIT = 0x12;
     const static uint64 THREAD_DISPATCH = 0x13;
@@ -75,7 +83,7 @@ private:
     const static uint64 GETC = 0x41;
     const static uint64 PUTC = 0x42;
 
-    const static uint32 KEYBOARD_INT_NO = 0x0a;
+    const static uint32 KEYBOARD_INT_NO = 0xa;
 
     static uint64 retrieve_param(uint8 offset);
     static void handleSupervisorTrap();

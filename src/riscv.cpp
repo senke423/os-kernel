@@ -23,7 +23,7 @@ void riscv::handleSupervisorTrap() {
 
     }
     else if (scause == ECALL_USER_MODE || scause == ECALL_KERNEL_MODE){
-        uint64 sepc = r_sepc() + 4;
+        uint64 sepc = r_sepc() + 4; // +4 so that we return to the address behind the "ecall" address
         uint64 sstatus = r_sstatus();
 
         uint64 a0 = retrieve_param(0); // code
@@ -43,6 +43,7 @@ void riscv::handleSupervisorTrap() {
             case THREAD_EXIT:
                 break;
             case THREAD_DISPATCH:
+                TCB::dispatch();
                 break;
             case SEM_OPEN:
                 break;
@@ -75,6 +76,15 @@ void riscv::handleSupervisorTrap() {
     else if (scause == SUP_SOFT_INT){
         // interrupt: yes, supervisor software interrupt (timer)
         // timer frequency: 10 Hz
+        TCB::timeSliceCnt++;
+        if (TCB::timeSliceCnt >= TCB::running->getTimeSlice()){
+            uint64 sepc = r_sepc();
+            uint64 sstatus = r_sstatus();
+            TCB::dispatch();
+            w_sstatus(sstatus);
+            w_sepc(sepc);
+        }
+
         mc_sip(SIP_SSIP);
     }
     else if (scause == SUP_EXT_INT){
