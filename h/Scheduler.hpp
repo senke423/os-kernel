@@ -11,7 +11,8 @@
 class TCB;
 
 class Scheduler {
-    static LinkedList<TCB*> queue;
+    static LinkedList<TCB*> ready_threads;
+    static LinkedList<TCB*> sleeping_threads;
 
     Scheduler() {}
 public:
@@ -19,8 +20,14 @@ public:
     Scheduler& operator=(const Scheduler& scheduler) = delete;
 
     static TCB* get();
+    static TCB* removeThread(TCB* thread);
     static void put(TCB* thread);
     static size_t getLen();
+
+    static TCB* getSleeping();
+    static TCB* removeSleepingThread(TCB* thread);
+    static void putSleeping(TCB* thread);
+    static size_t getLenSleeping();
 };
 
 

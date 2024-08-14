@@ -22,7 +22,7 @@ int TCB::createThread(TCB **handle, TCB::subroutine subroutine, void *arg, void 
     if (!*handle)
         return THREAD_CREATE_ERR;
 
-    // put this newly created thread in the Scheduler queue
+    // put this newly created thread in the Scheduler ready_threads
     Scheduler::put(*handle);
     return 0;
 }

@@ -8,7 +8,6 @@
 #include "../lib/hw.h"
 #include "Scheduler.hpp"
 #include "riscv.hpp"
-#include "../lib/mem.h"
 
 class TCB {
 public:
@@ -35,6 +34,7 @@ public:
 
 private:
     friend class riscv;
+    friend class mySemaphore;
 
     const static int THREAD_CREATE_ERR = -20;
 
@@ -68,5 +68,6 @@ private:
 };
 
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext);
+
 
 #endif //INC_41F_OS_PROJEKAT_TCB_H

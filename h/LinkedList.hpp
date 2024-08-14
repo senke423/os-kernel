@@ -6,7 +6,6 @@
 #define INC_41F_OS_PROJEKAT_LINKEDLIST_HPP
 
 #include "../lib/hw.h"
-#include "../lib/mem.h"
 #include "../lib/console.h"
 #include "../lib/printing.hpp"
 
@@ -39,6 +38,7 @@ public:
 
     void push(Type data);
     bool add(Type data, size_t index);
+    Type remove(Type data);
     Type remove(size_t index);
     Type pop();
     Type peek(size_t index);
@@ -46,6 +46,27 @@ public:
 
     void print();
 };
+
+template<typename Type>
+Type LinkedList<Type>::remove(Type data) {
+    size_t index = 0;
+    bool found = false;
+
+    Element* iter = head;
+    while (iter){
+        if (iter->data == data){
+            found = true;
+            break;
+        }
+        index++;
+        iter = iter->next;
+    }
+
+    if (!found)
+        return nullptr;
+
+    return LinkedList<Type>::remove(index);
+}
 
 template<typename Type>
 size_t LinkedList<Type>::getLen() {

@@ -19,6 +19,9 @@ public:
 private:
     const static int SEM_CLOSE_ERR = -10;
     const static int SEM_NULL_ERR = -11;
+    const static int SEM_UNPAIRED_SIG = -12;
+    const static int SEM_DEAD = -1;
+    const static int TIMEOUT = -2;
 
     explicit mySemaphore(unsigned int val) : val(val), is_open(true) {
         blocked_threads = LinkedList<TCB*>();

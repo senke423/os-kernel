@@ -14,21 +14,84 @@ int mySemaphore::open(mySemaphore **handle, unsigned int init) {
 int mySemaphore::close() {
     if (!is_open)
         return SEM_CLOSE_ERR;
-    // implement thread logic
+    is_open = false;
+
+    // unblock the threads
+    while (blocked_threads.getLen() != 0){
+        TCB* tmp = blocked_threads.pop();
+        if (tmp->isAsleep()){
+            // removes the first sleeping thread from the queue
+            Scheduler::removeSleepingThread(tmp);
+        } else {
+            tmp->setBlocked(false);
+            Scheduler::put(tmp);
+        }
+    }
 
     return 0;
 }
 
 int mySemaphore::wait() {
+    // semaphore is deallocated
+    if (!is_open)
+        return SEM_NULL_ERR;
+
     if (val > 0){
         --val;
     } else {
-        // BLOCK THREAD UNTIL VAL IS > 0
+        // RUNNING THREAD SHOULD BE BLOCKED,
+        // AND ANOTHER THREAD SHOULD BE DISPATCHED
+        TCB::running->setBlocked(true);
+        blocked_threads.push(TCB::running);
+        TCB::dispatch();
+
+        // is the semaphore still opened?
+//        if (!is_open)
+//            return -1;
     }
     return 0;
 }
 
 int mySemaphore::signal() {
+    if (!is_open)
+        return SEM_NULL_ERR;
+
     ++val;
+
+    // UNBLOCK THREAD AND PUSH TO READY QUEUE
+    if (blocked_threads.getLen() > 0){
+        TCB* temp = blocked_threads.pop();
+        temp->setBlocked(false);
+
+        Scheduler::put(temp);
+    } else {
+        return SEM_UNPAIRED_SIG;
+    }
+
+    return 0;
+}
+
+int mySemaphore::timed_wait(mySemaphore id, time_t timeout) {
+
+    if (!is_open)
+        return SEM_NULL_ERR;
+
+    if (val > 0){
+        --val;
+    } else {
+
+
+        // RUNNING THREAD SHOULD BE BLOCKED,
+        // AND ANOTHER THREAD SHOULD BE DISPATCHED
+//        TCB::running->setBlocked(true);
+//        blocked_threads.push(TCB::running);
+//        TCB::dispatch();
+    }
+
+
+    return 0;
+}
+
+int mySemaphore::try_wait() {
     return 0;
 }
