@@ -8,8 +8,6 @@ bool riscv::userMode = false;
 
 void riscv::handleSupervisorTrap() {
 
-    printInt(80, 10, 0);
-
     uint64 scause = r_scause();
 
     if (scause == ILLEGAL_INSTR){
@@ -34,6 +32,8 @@ void riscv::handleSupervisorTrap() {
         volatile void* ptr;
         char c;
         int ret;
+        mySemaphore* handle;
+
         switch(a0){
             case MEM_ALLOC:
                 a1 *= MEM_BLOCK_SIZE; // convert to bytes
@@ -60,23 +60,46 @@ void riscv::handleSupervisorTrap() {
 
                 break;
             case THREAD_EXIT:
+                ret = TCB::exit();
+                set_a0(ret);
+                TCB::dispatch();
                 break;
             case THREAD_DISPATCH:
                 TCB::dispatch();
                 break;
             case SEM_OPEN:
+                ret = mySemaphore::open((mySemaphore**)a1, a2);
+                set_a0(ret);
                 break;
             case SEM_CLOSE:
+                handle = (mySemaphore*)a1;
+                ret = handle->close();
+                set_a0(ret);
                 break;
             case SEM_WAIT:
+                handle = (mySemaphore*)a1;
+                ret = handle->wait();
+                set_a0(ret);
                 break;
             case SEM_SIGNAL:
+                handle = (mySemaphore*)a1;
+                ret = handle->signal();
+                set_a0(ret);
                 break;
             case SEM_TIMEDWAIT:
+                handle = (mySemaphore*)a1;
+                ret = handle->timed_wait((time_t)a2);
+                set_a0(ret);
                 break;
             case SEM_TRYWAIT:
+                handle = (mySemaphore*)a1;
+                ret = handle->try_wait();
+                set_a0(ret);
                 break;
             case TIME_SLEEP:
+                Scheduler::putSleeping(TCB::running, (size_t)a1);
+                TCB::dispatch();
+                set_a0(0);
                 break;
             case GETC:
                 c = myConsole::get_out();
@@ -100,6 +123,8 @@ void riscv::handleSupervisorTrap() {
         // interrupt: yes, supervisor software interrupt (timer)
         // timer frequency: 10 Hz
         TCB::timeSliceCnt++;
+        Scheduler::update();
+
         if (TCB::timeSliceCnt >= TCB::running->getTimeSlice()){
             uint64 sepc = r_sepc();
             uint64 sstatus = r_sstatus();

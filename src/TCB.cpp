@@ -37,3 +37,8 @@ void TCB::thread_wrapper() {
 void TCB::yield() {
     __asm__ volatile ("ecall");
 }
+
+int TCB::exit() {
+    running->setFinished(true);
+    return 0;
+}

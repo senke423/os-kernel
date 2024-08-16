@@ -20,13 +20,9 @@ int mySemaphore::close() {
     // unblock the threads
     while (blocked_threads.getLen() != 0){
         TCB* tmp = blocked_threads.pop();
-        if (tmp->isAsleep()){
-            // removes the first sleeping thread from the queue
-            Scheduler::removeSleepingThread(tmp);
-        } else {
-            tmp->setBlocked(false);
-            Scheduler::put(tmp);
-        }
+        tmp->setBlocked(false);
+        Scheduler::removeSleepingThread(tmp);
+        Scheduler::put(tmp);
     }
 
     return 0;
@@ -72,7 +68,7 @@ int mySemaphore::signal() {
     return 0;
 }
 
-int mySemaphore::timed_wait(mySemaphore id, time_t timeout) {
+int mySemaphore::timed_wait(time_t timeout) {
 
     if (!is_open)
         return SEM_NULL_ERR;
@@ -80,7 +76,19 @@ int mySemaphore::timed_wait(mySemaphore id, time_t timeout) {
     if (val > 0){
         --val;
     } else {
+        TCB::running->setBlocked(true);
+        blocked_threads.push(TCB::running);
+        time_sleep(timeout);
 
+        if (!is_open)
+            return SEM_DEAD;
+
+        if (TCB::running->isBlocked()){
+            blocked_threads.pop();
+            TCB::running->setBlocked(false);
+
+            return TIMEOUT;
+        }
     }
 
     return 0;

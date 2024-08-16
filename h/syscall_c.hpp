@@ -8,7 +8,6 @@
 #include "../lib/hw.h"
 #include "TCB.hpp"
 #include "mySemaphore.hpp"
-#include "Scheduler.hpp"
 
 const static int SEMDEAD = -1;
 const static int TIMEOUT = -2;
@@ -17,11 +16,13 @@ const static int NULL_PTR_ERR = -3;
 void* mem_alloc(size_t size);
 int mem_free(void* alloc_space);
 
+class TCB;
 typedef TCB* thread_t;
 int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg);
 int thread_exit();
 void thread_dispatch();
 
+class mySemaphore;
 typedef mySemaphore* sem_t;
 int sem_open(sem_t* handle, unsigned init);
 int sem_close(sem_t handle);

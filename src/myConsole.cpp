@@ -34,6 +34,7 @@ void myConsole::console_finalize() {
 }
 
 void myConsole::handler() {
+    // this probabably needs some revision...
     while (*(char *) CONSOLE_STATUS & CONSOLE_RX_STATUS_BIT){
         myConsole::put_in(*((char*)CONSOLE_RX_DATA));
     }

@@ -7,6 +7,8 @@
 
 #include "mySemaphore.hpp"
 #include "../lib/hw.h"
+
+class mySemaphore;
 typedef mySemaphore* sem_t;
 
 class charBuffer {

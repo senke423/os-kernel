@@ -11,11 +11,15 @@
 class TCB;
 
 class Scheduler {
-    static LinkedList<TCB*> ready_threads;
-    static LinkedList<TCB*> sleeping_threads;
-
-    Scheduler() {}
 public:
+    typedef struct SleepingThread {
+        TCB* thread;
+        time_t time_left;
+
+        SleepingThread(TCB* thread, time_t time_left) : thread(thread), time_left(time_left) {}
+    } SleepingThread;
+
+
     Scheduler(const Scheduler& scheduler) = delete;
     Scheduler& operator=(const Scheduler& scheduler) = delete;
 
@@ -24,10 +28,16 @@ public:
     static void put(TCB* thread);
     static size_t getLen();
 
-    static TCB* getSleeping();
-    static TCB* removeSleepingThread(TCB* thread);
-    static void putSleeping(TCB* thread);
+    static void putSleeping(TCB* thread, time_t timeout);
+    static void removeSleepingThread(TCB* thread);
+    static void update();
     static size_t getLenSleeping();
+
+private:
+    static LinkedList<TCB*> ready_threads;
+    static LinkedList<SleepingThread*> sleeping_threads;
+
+    Scheduler() {}
 };
 
 

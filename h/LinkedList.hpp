@@ -6,8 +6,6 @@
 #define INC_41F_OS_PROJEKAT_LINKEDLIST_HPP
 
 #include "../lib/hw.h"
-#include "../lib/console.h"
-#include "../lib/printing.hpp"
 
 template<typename Type>
 class LinkedList {
@@ -28,25 +26,54 @@ class LinkedList {
 
     Element* head;
     Element* tail;
+    Element* cur;
     size_t len;
 
 public:
     LinkedList(){
         head = tail = nullptr;
         len = 0;
+        cur = nullptr;
     }
 
     void push(Type data);
+    void cur_set_first();
+    void cur_next();
+    void remove_cur();
     bool add(Type data, size_t index);
     bool exists(Type data);
     Type remove(Type data);
     Type remove(size_t index);
     Type pop();
+    Type get_cur();
     Type peek(size_t index);
     size_t getLen();
 
     void print();
 };
+
+template<typename Type>
+void LinkedList<Type>::remove_cur() {
+    remove(cur->data);
+}
+
+template<typename Type>
+Type LinkedList<Type>::get_cur() {
+    if (cur)
+        return cur->data;
+    return nullptr;
+}
+
+template<typename Type>
+void LinkedList<Type>::cur_next() {
+    if (cur)
+        cur = cur->next;
+}
+
+template<typename Type>
+void LinkedList<Type>::cur_set_first() {
+    cur = head;
+}
 
 template<typename Type>
 bool LinkedList<Type>::exists(Type data) {
@@ -154,11 +181,11 @@ Type LinkedList<Type>::peek(size_t index) {
 template<typename Type>
 void LinkedList<Type>::print() {
 
-    Element* curr = head;
-    while (head != nullptr){
-        __putc(curr->data);
-        __putc(' ');
-    }
+//    Element* curr = head;
+//    while (head != nullptr){
+//        putc(curr->data);
+//        putc(' ');
+//    }
 }
 
 

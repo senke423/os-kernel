@@ -5,7 +5,9 @@
 #ifndef INC_41F_OS_PROJEKAT_MYSEMAPHORE_HPP
 #define INC_41F_OS_PROJEKAT_MYSEMAPHORE_HPP
 
-#include "../h/TCB.hpp"
+#include "syscall_c.hpp"
+
+class TCB;
 
 class mySemaphore {
 public:
@@ -13,7 +15,7 @@ public:
     int close();
     int wait();
     int signal();
-    int timed_wait(mySemaphore id, time_t timeout);
+    int timed_wait(time_t timeout);
     int try_wait();
 
 private:

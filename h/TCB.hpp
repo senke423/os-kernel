@@ -61,6 +61,7 @@ private:
         asleep(false)
     {}
 
+    static int exit();
     static void dispatch();
     static void yield();
     static void thread_wrapper();
