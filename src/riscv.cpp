@@ -3,7 +3,6 @@
 //
 
 #include "../h/riscv.hpp"
-#include "../lib/printing.hpp"
 
 bool riscv::userMode = false;
 
@@ -27,18 +26,38 @@ void riscv::handleSupervisorTrap() {
         uint64 sstatus = r_sstatus();
 
         uint64 a0 = retrieve_param(0); // code
-        uint64 a1 = retrieve_param(1);
-//        uint64 a2 = retrieve_param(2);
-//        uint64 a3 = retrieve_param(3);
-//        uint64 a4 = retrieve_param(4);
+        uint64 a1 = retrieve_param(1); // 1st param
+        uint64 a2 = retrieve_param(2); // 2nd param
+        uint64 a3 = retrieve_param(3); // 3rd param
+        uint64 a4 = retrieve_param(4); // 4th param
+
+        volatile void* ptr;
+        char c;
+        int ret;
         switch(a0){
             case MEM_ALLOC:
                 a1 *= MEM_BLOCK_SIZE; // convert to bytes
-                MemoryAllocator::mem_alloc(a1);
+                ptr = MemoryAllocator::mem_alloc(a1);
+                set_a0((uint64)ptr);
                 break;
             case MEM_FREE:
+                ret = MemoryAllocator::mem_free((void*)a1);
+                set_a0((uint64)ret);
                 break;
             case THREAD_CREATE:
+                // a1 -> handle
+                // a2 -> start_routine
+                // a3 -> arg
+                // a4 -> stack space
+
+                if ((TCB::subroutine) a2 == nullptr){
+                    ret = -1;
+                    set_a0(ret);
+                } else {
+                    ret = (uint64)TCB::createThread((TCB**)a1, (TCB::subroutine)a2, (void*)a3, (void*)a4);
+                    set_a0(ret);
+                }
+
                 break;
             case THREAD_EXIT:
                 break;
@@ -60,8 +79,12 @@ void riscv::handleSupervisorTrap() {
             case TIME_SLEEP:
                 break;
             case GETC:
+                c = myConsole::get_out();
+                set_a0(c);
                 break;
             case PUTC:
+                myConsole::put_out(a1);
+                myConsole::handler();
                 break;
             default:
                 // unknown code
@@ -91,9 +114,7 @@ void riscv::handleSupervisorTrap() {
         // interrupt: yes, supervisor external interrupt (console)
         int ret = plic_claim();
         if (ret == KEYBOARD_INT_NO){
-
-            // do stuff...
-
+            myConsole::handler();
             plic_complete(KEYBOARD_INT_NO);
         }
     }
@@ -129,4 +150,8 @@ void riscv::close_riscv_emulation() {
     __asm__ volatile ("addi t0, %[close_code], 0" : : [close_code] "r"(close_code));
     __asm__ volatile ("li t1, 0x100000");
     __asm__ volatile ("sw t0, 0(t1)");
+}
+
+void riscv::set_a0(uint64 val) {
+    __asm__ volatile ("mv a0, %[val]" : : [val] "r"(val));
 }

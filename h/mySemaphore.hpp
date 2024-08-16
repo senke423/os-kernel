@@ -9,7 +9,7 @@
 
 class mySemaphore {
 public:
-    int open(mySemaphore** handle, unsigned int init);
+    static int open(mySemaphore** handle, unsigned int init);
     int close();
     int wait();
     int signal();

@@ -4,6 +4,7 @@
 
 #include "../h/MemoryAllocator.hpp"
 #include "../h/LinkedList.hpp"
+#include "../h/myConsole.hpp"
 #include "../h/riscv.hpp"
 
 extern void userMain();
@@ -11,7 +12,12 @@ extern "C" void supervisorTrap();
 
 void init_kernel(){
     MemoryAllocator::initialize();
-//    riscv::w_stvec((uint64)supervisorTrap);
+    myConsole::console_init();
+    riscv::w_stvec((uint64)supervisorTrap);
+}
+
+void finalize_kernel(){
+    myConsole::console_finalize();
 }
 
 void main(){
@@ -20,5 +26,7 @@ void main(){
     userMain();
 
     __putc('\n');
+
+    finalize_kernel();
     riscv::close_riscv_emulation();
 }

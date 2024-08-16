@@ -38,6 +38,7 @@ public:
 
     void push(Type data);
     bool add(Type data, size_t index);
+    bool exists(Type data);
     Type remove(Type data);
     Type remove(size_t index);
     Type pop();
@@ -46,6 +47,19 @@ public:
 
     void print();
 };
+
+template<typename Type>
+bool LinkedList<Type>::exists(Type data) {
+
+    Element* iter = head;
+    while (iter){
+        if (iter->data == data)
+            return true;
+        iter = iter->next;
+    }
+
+    return false;
+}
 
 template<typename Type>
 Type LinkedList<Type>::remove(Type data) {

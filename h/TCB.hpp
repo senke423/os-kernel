@@ -14,7 +14,7 @@ public:
     static TCB* running;
     using subroutine = void (*)(void*);
 
-    ~TCB() { delete[] stack; }
+    ~TCB() { delete stack; }
 
     bool isFinished() const { return finished; }
     void setFinished(bool val) { finished = val; }

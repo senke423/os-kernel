@@ -11,6 +11,7 @@ int mySemaphore::open(mySemaphore **handle, unsigned int init) {
     return 0;
 }
 
+// does NOT deallocate the space
 int mySemaphore::close() {
     if (!is_open)
         return SEM_CLOSE_ERR;
@@ -46,8 +47,8 @@ int mySemaphore::wait() {
         TCB::dispatch();
 
         // is the semaphore still opened?
-//        if (!is_open)
-//            return -1;
+        if (!is_open)
+            return SEM_NULL_ERR;
     }
     return 0;
 }
@@ -80,18 +81,19 @@ int mySemaphore::timed_wait(mySemaphore id, time_t timeout) {
         --val;
     } else {
 
-
-        // RUNNING THREAD SHOULD BE BLOCKED,
-        // AND ANOTHER THREAD SHOULD BE DISPATCHED
-//        TCB::running->setBlocked(true);
-//        blocked_threads.push(TCB::running);
-//        TCB::dispatch();
     }
-
 
     return 0;
 }
 
 int mySemaphore::try_wait() {
-    return 0;
+    if (!is_open)
+        return SEM_NULL_ERR;
+
+    if (val > 0){
+        --val;
+        return 0;
+    }
+
+    return 1;
 }

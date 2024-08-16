@@ -40,6 +40,12 @@ int mem_free(void* alloc_space){
 
 int thread_create(thread_t *handle, void (*start_routine)(void *), void *arg) {
     uint64 code = 0x11;
+
+    void* stack = start_routine == nullptr ? nullptr : MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE);
+    if (!stack)
+        return -1;
+
+    __asm__ volatile ("mv a4, %[stack]" : : [stack] "r"(stack));
     __asm__ volatile ("mv a3, %[arg]" : : [arg] "r"(arg));
     __asm__ volatile ("mv a2, %[start_routine]" : : [start_routine] "r"(start_routine));
     __asm__ volatile ("mv a1, %[handle]" : : [handle] "r"(handle));

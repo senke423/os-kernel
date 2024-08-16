@@ -9,6 +9,7 @@
 #include "../lib/console.h"
 #include "MemoryAllocator.hpp"
 #include "TCB.hpp"
+#include "myConsole.hpp"
 
 extern "C" void pushRegisters();
 extern "C" void popRegisters();
@@ -86,6 +87,7 @@ private:
     const static uint32 KEYBOARD_INT_NO = 0xa;
 
     static uint64 retrieve_param(uint8 offset);
+    static void set_a0(uint64 val);
     static void handleSupervisorTrap();
 
     static bool userMode;
