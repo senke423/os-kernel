@@ -3,23 +3,35 @@
 //
 
 #include "../h/riscv.hpp"
+#include "../lib/console.h"
+#include "../lib/printing.hpp"
 
 bool riscv::userMode = false;
 
 void riscv::handleSupervisorTrap() {
 
+    printString("\nPrekidna rutina\n");
+
     uint64 scause = r_scause();
+    uint64 stvec = r_stvec();
+    uint64 sepc = r_sepc();
+    printInt(scause, 10, 0);
 
     if (scause == ILLEGAL_INSTR){
 
     }
     else if (scause == UNAUTH_READ){
-
+        printString("UNAUTHORIZED READ!\nstvec: ");
+        printInt(stvec, 10, 0);
+        printString("sepc: ");
+        printInt(sepc, 10, 0);
     }
     else if (scause == UNAUTH_WRITE){
 
     }
     else if (scause == ECALL_USER_MODE || scause == ECALL_KERNEL_MODE){
+        __putc('S');
+
         uint64 sepc = r_sepc() + 4; // +4 so that we return to the address behind the "ecall" address
         uint64 sstatus = r_sstatus();
 
@@ -141,6 +153,7 @@ void riscv::handleSupervisorTrap() {
         }
     }
     else {
+        __putc('C');
         // unexpected trap cause
     }
 }

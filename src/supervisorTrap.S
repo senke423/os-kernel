@@ -1,5 +1,3 @@
-.extern handleSupervisorTrap
-
 .global supervisorTrap
 .align 4
 supervisorTrap:

@@ -5,8 +5,6 @@
 # 1 "/usr/riscv64-linux-gnu/include/stdc-predef.h" 1 3
 # 32 "<command-line>" 2
 # 1 "src/supervisorTrap.S"
-.extern handleSupervisorTrap
-
 .global supervisorTrap
 .align 4
 supervisorTrap:
