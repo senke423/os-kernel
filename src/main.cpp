@@ -7,6 +7,7 @@
 #include "../h/myConsole.hpp"
 #include "../h/riscv.hpp"
 #include "../lib/console.h"
+#include "../lib/printing.hpp"
 
 extern void userMain();
 extern "C" void supervisorTrap();
@@ -14,12 +15,12 @@ extern "C" void supervisorTrap();
 void init_kernel(){
     MemoryAllocator::initialize();
 
-    __putc('A');
-    riscv::w_stvec((uint64)supervisorTrap);
-    riscv::ms_sstatus(riscv::SSTATUS_SIE);
-    __putc('Z');
+    riscv::w_stvec((uint64)&supervisorTrap);
+//    riscv::ms_sstatus(riscv::SSTATUS_SIE);
 
     myConsole::console_init();
+
+    printString("INIT COMPLETE ---\n");
 }
 
 void finalize_kernel(){
@@ -27,10 +28,22 @@ void finalize_kernel(){
 }
 
 void main(){
-    init_kernel();
+//    init_kernel();
+    MemoryAllocator::initialize();
 
-    userMain();
 
-    finalize_kernel();
+//    userMain();
+    char* niz = new char[3];
+    niz[0] = 'a';
+    niz[1] = 'b';
+    niz[2] = 'c';
+
+    __putc(niz[0]);
+    __putc(niz[1]);
+    __putc(niz[2]);
+
+//    delete[] niz;
+
+//    finalize_kernel();
     riscv::close_riscv_emulation();
 }

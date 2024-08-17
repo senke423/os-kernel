@@ -3,6 +3,7 @@
 //
 
 #include "../h/MemoryAllocator.hpp"
+#include "../lib/printing.hpp"
 
 MemoryAllocator::Chunk* MemoryAllocator::free_head = nullptr;
 

@@ -10,6 +10,7 @@
 #include "MemoryAllocator.hpp"
 #include "TCB.hpp"
 #include "myConsole.hpp"
+#include "../lib/printing.hpp"
 
 extern "C" void pushRegisters();
 extern "C" void popRegisters();
@@ -179,5 +180,12 @@ inline void riscv::w_sscratch(uint64 sscratch) {
     __asm__ volatile ("csrw sscratch, %[sscratch]" : : [sscratch] "r"(sscratch));
 }
 
+inline uint64 riscv::retrieve_param(volatile uint8 index) {
+    uint64 volatile param;
+    uint64 volatile offset = index*8 + 80;
+    __asm__ volatile ("add t0, %[offset], s0" : : [offset]"r"(offset) : "t0");
+    __asm__ volatile ("ld %0, 0(t0)" : "=r"(param));
+    return param;
+}
 
 #endif //INC_41F_OS_PROJEKAT_RISCV_HPP

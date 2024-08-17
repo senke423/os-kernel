@@ -4,33 +4,45 @@
 
 #include "../h/riscv.hpp"
 #include "../lib/console.h"
-#include "../lib/printing.hpp"
 
 bool riscv::userMode = false;
 
 void riscv::handleSupervisorTrap() {
-
-    printString("\nPrekidna rutina\n");
+    printString("ENTERED SUPERVISOR TRAP\n");
 
     uint64 scause = r_scause();
     uint64 stvec = r_stvec();
     uint64 sepc = r_sepc();
+
+    printString("\nPrekidna rutina\n");
     printInt(scause, 10, 0);
 
     if (scause == ILLEGAL_INSTR){
+        printString("UNAUTHORIZED READ!\nstvec: ");
+        printInt(stvec, 10, 0);
+        printString("sepc: ");
+        printInt(sepc, 10, 0);
 
+        riscv::close_riscv_emulation();
     }
     else if (scause == UNAUTH_READ){
         printString("UNAUTHORIZED READ!\nstvec: ");
         printInt(stvec, 10, 0);
         printString("sepc: ");
         printInt(sepc, 10, 0);
+
+        riscv::close_riscv_emulation();
     }
     else if (scause == UNAUTH_WRITE){
+        printString("UNAUTHORIZED WRITE!\nstvec: ");
+        printInt(stvec, 10, 0);
+        printString("sepc: ");
+        printInt(sepc, 10, 0);
 
+        riscv::close_riscv_emulation();
     }
     else if (scause == ECALL_USER_MODE || scause == ECALL_KERNEL_MODE){
-        __putc('S');
+        printString("ECALL SUCCESS\n");
 
         uint64 sepc = r_sepc() + 4; // +4 so that we return to the address behind the "ecall" address
         uint64 sstatus = r_sstatus();
@@ -40,6 +52,9 @@ void riscv::handleSupervisorTrap() {
         uint64 a2 = retrieve_param(2); // 2nd param
         uint64 a3 = retrieve_param(3); // 3rd param
         uint64 a4 = retrieve_param(4); // 4th param
+
+        printString("a0: ");
+        printInt(a0, 10, 0);
 
         volatile void* ptr;
         char c;
@@ -123,6 +138,7 @@ void riscv::handleSupervisorTrap() {
                 break;
             default:
                 // unknown code
+                printString("UNKNOWN CODE!\n");
                 break;
         }
         w_sstatus(sstatus);
@@ -158,14 +174,6 @@ void riscv::handleSupervisorTrap() {
     }
 }
 
-uint64 riscv::retrieve_param(uint8 index) {
-    uint64 volatile param;
-    uint64 volatile offset = index*8 + 80;
-    __asm__ volatile ("add t0, %[offset], s0" : : [offset]"r"(offset) : "t0");
-    __asm__ volatile ("ld %0, 0(t0)" : "=r"(param));
-    return param;
-}
-
 void riscv::pop_spp_spie() {
     if (userMode){
         mc_sstatus(SSTATUS_SPP);
@@ -187,6 +195,6 @@ void riscv::close_riscv_emulation() {
     __asm__ volatile ("sw t0, 0(t1)");
 }
 
-void riscv::set_a0(uint64 val) {
+void riscv::set_a0(volatile uint64 val) {
     __asm__ volatile ("mv a0, %[val]" : : [val] "r"(val));
 }
