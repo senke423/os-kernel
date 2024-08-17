@@ -9,7 +9,6 @@
 #include "../h/LinkedList.hpp"
 
 class TCB;
-class mySemaphore;
 
 class Scheduler {
 public:

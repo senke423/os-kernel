@@ -20,14 +20,15 @@ void init_kernel(){
 
 void finalize_kernel(){
 //    myConsole::console_finalize();
+    MemoryAllocator::initialize();
+    myConsole::console_init();
+    riscv::w_stvec((uint64)supervisorTrap);
 }
 
 void main(){
     init_kernel();
 
     userMain();
-
-//    __putc('\n');
 
     finalize_kernel();
     riscv::close_riscv_emulation();

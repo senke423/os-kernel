@@ -6,6 +6,7 @@
 #define INC_41F_OS_PROJEKAT_RISCV_HPP
 
 #include "../lib/hw.h"
+#include "../lib/console.h"
 #include "MemoryAllocator.hpp"
 #include "TCB.hpp"
 #include "myConsole.hpp"

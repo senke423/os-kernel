@@ -111,9 +111,6 @@ void riscv::handleSupervisorTrap() {
                 break;
             default:
                 // unknown code
-//                __putc('E');
-//                __putc('R');
-//                __putc('R');
                 break;
         }
         w_sstatus(sstatus);
