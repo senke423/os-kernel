@@ -8,7 +8,17 @@
 bool riscv::userMode = false;
 
 void riscv::handleSupervisorTrap() {
-    printString("ENTERED SUPERVISOR TRAP\n");
+
+    uint64 volatile a0; // code
+    __asm__ volatile ("mv %0, a0" : "=r"(a0));
+    uint64 volatile a1; // 1st param
+    __asm__ volatile ("lw %0, 88(fp)" : "=r"(a1));
+    uint64 volatile a2; // 2nd param
+    __asm__ volatile ("lw %0, 96(fp)" : "=r"(a2));
+    uint64 volatile a3; // 3rd param
+    __asm__ volatile ("lw %0, 104(fp)" : "=r"(a3));
+    uint64 volatile a4; // 4th param
+    __asm__ volatile ("lw %0, 112(fp)" : "=r"(a4));
 
     uint64 scause = r_scause();
     uint64 stvec = r_stvec();
@@ -47,100 +57,93 @@ void riscv::handleSupervisorTrap() {
         uint64 sepc = r_sepc() + 4; // +4 so that we return to the address behind the "ecall" address
         uint64 sstatus = r_sstatus();
 
-        uint64 a0 = retrieve_param(0); // code
-        uint64 a1 = retrieve_param(1); // 1st param
-        uint64 a2 = retrieve_param(2); // 2nd param
-        uint64 a3 = retrieve_param(3); // 3rd param
-        uint64 a4 = retrieve_param(4); // 4th param
 
-        printString("a0: ");
-        printInt(a0, 10, 0);
+        printString("a0 code: ");
+        printInt(a0, 16, 0);
+        __putc('\n');
 
-        volatile void* ptr;
-        char c;
-        int ret;
-        mySemaphore* handle;
-
-        switch(a0){
-            case MEM_ALLOC:
-                a1 *= MEM_BLOCK_SIZE; // convert to bytes
-                ptr = MemoryAllocator::mem_alloc(a1);
-                set_a0((uint64)ptr);
-                break;
-            case MEM_FREE:
-                ret = MemoryAllocator::mem_free((void*)a1);
-                set_a0((uint64)ret);
-                break;
-            case THREAD_CREATE:
-                // a1 -> handle
-                // a2 -> start_routine
-                // a3 -> arg
-                // a4 -> stack space
-
-                if ((TCB::subroutine) a2 == nullptr){
-                    ret = -1;
-                    set_a0(ret);
-                } else {
-                    ret = (uint64)TCB::createThread((TCB**)a1, (TCB::subroutine)a2, (void*)a3, (void*)a4);
-                    set_a0(ret);
-                }
-
-                break;
-            case THREAD_EXIT:
-                ret = TCB::exit();
-                set_a0(ret);
-                TCB::dispatch();
-                break;
-            case THREAD_DISPATCH:
-                TCB::dispatch();
-                break;
-            case SEM_OPEN:
-                ret = mySemaphore::open((mySemaphore**)a1, a2);
-                set_a0(ret);
-                break;
-            case SEM_CLOSE:
-                handle = (mySemaphore*)a1;
-                ret = handle->close();
-                set_a0(ret);
-                break;
-            case SEM_WAIT:
-                handle = (mySemaphore*)a1;
-                ret = handle->wait();
-                set_a0(ret);
-                break;
-            case SEM_SIGNAL:
-                handle = (mySemaphore*)a1;
-                ret = handle->signal();
-                set_a0(ret);
-                break;
-            case SEM_TIMEDWAIT:
-                handle = (mySemaphore*)a1;
-                ret = handle->timed_wait((time_t)a2);
-                set_a0(ret);
-                break;
-            case SEM_TRYWAIT:
-                handle = (mySemaphore*)a1;
-                ret = handle->try_wait();
-                set_a0(ret);
-                break;
-            case TIME_SLEEP:
-                Scheduler::putSleeping(TCB::running, (size_t)a1);
-                TCB::dispatch();
-                set_a0(0);
-                break;
-            case GETC:
-                c = myConsole::get_out();
-                set_a0(c);
-                break;
-            case PUTC:
-                myConsole::put_out(a1);
-                myConsole::handler();
-                break;
-            default:
-                // unknown code
-                printString("UNKNOWN CODE!\n");
-                break;
+        if (a0 == MEM_ALLOC){
+            a1 *= MEM_BLOCK_SIZE; // convert to bytes
+            printString("How many bytes, converted? ");
+            void* ptr = MemoryAllocator::mem_alloc(a1);
+            __asm__ volatile ("mv t0, %0" : : "r"(ptr));
+            __asm__ volatile ("sw t0, 80(fp)");
         }
+        else if (a0 == MEM_FREE){
+            printInt(a1);
+            int ret = MemoryAllocator::mem_free((void*)a1);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sw t0, 80(fp)");
+        }
+        else if (a0 == THREAD_CREATE){
+            // a1 -> handle
+            // a2 -> start_routine
+            // a3 -> arg
+            // a4 -> stack space
+
+            if ((TCB::subroutine) a2 == nullptr){
+                int ret = -1;
+                set_a0(ret);
+            } else {
+                int ret = TCB::createThread((TCB*)a1, (TCB::subroutine)a2, (void*)a3, (void*)a4);
+                set_a0(ret);
+            }
+        }
+        else if (a0 == THREAD_EXIT){
+            int ret = TCB::exit();
+            set_a0(ret);
+            TCB::dispatch();
+        }
+        else if (a0 == THREAD_DISPATCH){
+            TCB::dispatch();
+        }
+        else if (a0 == SEM_OPEN){
+            int ret = mySemaphore::open((mySemaphore**)a1, a2);
+            set_a0(ret);
+        }
+        else if (a0 == SEM_CLOSE){
+            mySemaphore* handle = (mySemaphore*)a1;
+            int ret = handle->close();
+            set_a0(ret);
+        }
+        else if (a0 == SEM_WAIT){
+            mySemaphore* handle = (mySemaphore*)a1;
+            int ret = handle->wait();
+            set_a0(ret);
+        }
+        else if (a0 == SEM_SIGNAL){
+            mySemaphore* handle = (mySemaphore*)a1;
+            int ret = handle->signal();
+            set_a0(ret);
+        }
+        else if (a0 == SEM_TIMEDWAIT){
+            mySemaphore* handle = (mySemaphore*)a1;
+            int ret = handle->timed_wait((time_t)a2);
+            set_a0(ret);
+        }
+        else if (a0 == SEM_TRYWAIT){
+            mySemaphore* handle = (mySemaphore*)a1;
+            int ret = handle->try_wait();
+            set_a0(ret);
+        }
+        else if (a0 == TIME_SLEEP){
+            Scheduler::putSleeping(TCB::running, (size_t)a1);
+            TCB::dispatch();
+            set_a0(0);
+        }
+        else if (a0 == GETC){
+            char c = myConsole::get_out();
+            set_a0(c);
+        }
+        else if (a0 == PUTC){
+            myConsole::put_out(a1);
+            myConsole::handler();
+        }
+        else {
+            // unknown code
+            printString("UNKNOWN CODE!\n");
+        }
+
         w_sstatus(sstatus);
         w_sepc(sepc);
     }

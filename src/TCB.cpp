@@ -17,13 +17,13 @@ void TCB::dispatch() {
     contextSwitch(&old->context, &running->context);
 }
 
-int TCB::createThread(TCB **handle, TCB::subroutine subroutine, void *arg, void *stack_space) {
-    *handle = new TCB(subroutine, arg, stack_space, DEFAULT_TIME_SLICE);
-    if (!*handle)
-        return THREAD_CREATE_ERR;
+int TCB::createThread(TCB *handle, TCB::subroutine subroutine, void *arg, void *stack_space) {
+    printString("TCB createThread\n");
+    handle = new TCB(subroutine, arg, stack_space, DEFAULT_TIME_SLICE);
+    printString("TCB thread created");
 
     // put this newly created thread in the Scheduler ready_threads
-    Scheduler::put(*handle);
+    Scheduler::put(handle);
     return 0;
 }
 
