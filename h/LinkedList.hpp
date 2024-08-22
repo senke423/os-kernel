@@ -43,7 +43,7 @@ public:
     bool add(Type data, size_t index);
     bool exists(Type data);
     Type remove(Type data);
-    Type remove(size_t index);
+    Type removeIndex(size_t index);
     Type pop();
     Type get_cur();
     Type peek(size_t index);
@@ -106,7 +106,7 @@ Type LinkedList<Type>::remove(Type data) {
     if (!found)
         return nullptr;
 
-    return LinkedList<Type>::remove(index);
+    return LinkedList<Type>::removeIndex(index);
 }
 
 template<typename Type>
@@ -114,8 +114,12 @@ size_t LinkedList<Type>::getLen() {
     return len;
 }
 
+#include "../test/printing.hpp"
 template<typename Type>
-Type LinkedList<Type>::remove(size_t index) {
+Type LinkedList<Type>::removeIndex(size_t index) {
+    printString("LEN BEFORE: ");
+    printInt(len);
+
     if (index >= len || !len)
         return nullptr;
 
@@ -124,6 +128,7 @@ Type LinkedList<Type>::remove(size_t index) {
         Element* tmp = head;
         head = head->next;
 
+        len--;
         delete tmp;
         return ret;
     }
@@ -139,7 +144,10 @@ Type LinkedList<Type>::remove(size_t index) {
     iter->next->previous = iter->previous;
     Type ret = iter->data;
 
+    len--;
     delete iter;
+    printString("LEN AFTGER: ");
+    printInt(len);
     return ret;
 }
 

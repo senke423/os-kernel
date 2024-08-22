@@ -7,9 +7,12 @@
 #include "../h/myConsole.hpp"
 #include "../h/riscv.hpp"
 #include "../lib/console.h"
-#include "../lib/printing.hpp"
+//#include "../lib/myPrint.hpp"
+#include "../test/printing.hpp"
+
 
 extern void userMain();
+extern void myUserMain();
 extern "C" void supervisorTrap();
 
 void init_kernel(){
@@ -17,8 +20,10 @@ void init_kernel(){
 
     MemoryAllocator::initialize();
 
-    riscv::w_stvec((uint64)&supervisorTrap);
+    riscv::w_stvec((uint64)supervisorTrap);
 //    riscv::ms_sstatus(riscv::SSTATUS_SIE);
+//    uint64 mask = riscv::SSTATUS_SIE;
+//    __asm__ volatile("csrw sstatus, %0" : : "r" (mask));
 
 //    myConsole::console_init();
 
@@ -32,7 +37,8 @@ void finalize_kernel(){
 void main(){
     init_kernel();
 
-    userMain();
+//    userMain();
+    myUserMain();
 
     finalize_kernel();
     riscv::close_riscv_emulation();

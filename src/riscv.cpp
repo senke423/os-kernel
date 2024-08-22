@@ -4,56 +4,57 @@
 
 #include "../h/riscv.hpp"
 #include "../lib/console.h"
+#include "../test/printing.hpp"
+
 
 bool riscv::userMode = false;
 
 void riscv::handleSupervisorTrap() {
 
     uint64 volatile a0; // code
-    __asm__ volatile ("mv %0, a0" : "=r"(a0));
+    __asm__ volatile ("ld %0, 80(fp)" : "=r"(a0));
     uint64 volatile a1; // 1st param
-    __asm__ volatile ("lw %0, 88(fp)" : "=r"(a1));
+    __asm__ volatile ("ld %0, 88(fp)" : "=r"(a1));
     uint64 volatile a2; // 2nd param
-    __asm__ volatile ("lw %0, 96(fp)" : "=r"(a2));
+    __asm__ volatile ("ld %0, 96(fp)" : "=r"(a2));
     uint64 volatile a3; // 3rd param
-    __asm__ volatile ("lw %0, 104(fp)" : "=r"(a3));
+    __asm__ volatile ("ld %0, 104(fp)" : "=r"(a3));
     uint64 volatile a4; // 4th param
-    __asm__ volatile ("lw %0, 112(fp)" : "=r"(a4));
+    __asm__ volatile ("ld %0, 112(fp)" : "=r"(a4));
 
     uint64 scause = r_scause();
     uint64 stvec = r_stvec();
     uint64 sepc = r_sepc();
 
     printString("\nPrekidna rutina\n");
-    printInt(scause, 10, 0);
+    printInt(scause, 16, 0);
 
     if (scause == ILLEGAL_INSTR){
         printString("UNAUTHORIZED READ!\nstvec: ");
-        printInt(stvec, 10, 0);
+        printInt(stvec, 16, 0);
         printString("sepc: ");
-        printInt(sepc, 10, 0);
+        printInt(sepc, 16, 0);
 
         riscv::close_riscv_emulation();
     }
     else if (scause == UNAUTH_READ){
         printString("UNAUTHORIZED READ!\nstvec: ");
-        printInt(stvec, 10, 0);
+        printInt(stvec, 16, 0);
         printString("sepc: ");
-        printInt(sepc, 10, 0);
+        printInt(sepc, 16, 0);
 
         riscv::close_riscv_emulation();
     }
     else if (scause == UNAUTH_WRITE){
         printString("UNAUTHORIZED WRITE!\nstvec: ");
-        printInt(stvec, 10, 0);
+        printInt(stvec, 16, 0);
         printString("sepc: ");
-        printInt(sepc, 10, 0);
+        printInt(sepc, 16, 0);
 
         riscv::close_riscv_emulation();
     }
     else if (scause == ECALL_USER_MODE || scause == ECALL_KERNEL_MODE){
         printString("ECALL SUCCESS\n");
-
         uint64 sepc = r_sepc() + 4; // +4 so that we return to the address behind the "ecall" address
         uint64 sstatus = r_sstatus();
 
@@ -64,16 +65,18 @@ void riscv::handleSupervisorTrap() {
 
         if (a0 == MEM_ALLOC){
             a1 *= MEM_BLOCK_SIZE; // convert to bytes
-            printString("How many bytes, converted? ");
+            printString("PROSLO JE\n");
+//            printString("How many bytes, converted? ");
             void* ptr = MemoryAllocator::mem_alloc(a1);
+            printString("VRATIO SE\n");
             __asm__ volatile ("mv t0, %0" : : "r"(ptr));
-            __asm__ volatile ("sw t0, 80(fp)");
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == MEM_FREE){
             printInt(a1);
             int ret = MemoryAllocator::mem_free((void*)a1);
             __asm__ volatile ("mv t0, %0" : : "r"(ret));
-            __asm__ volatile ("sw t0, 80(fp)");
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == THREAD_CREATE){
             // a1 -> handle
@@ -81,17 +84,20 @@ void riscv::handleSupervisorTrap() {
             // a3 -> arg
             // a4 -> stack space
 
-            if ((TCB::subroutine) a2 == nullptr){
-                int ret = -1;
-                set_a0(ret);
-            } else {
-                int ret = TCB::createThread((TCB*)a1, (TCB::subroutine)a2, (void*)a3, (void*)a4);
-                set_a0(ret);
-            }
+            int ret = TCB::createThread((TCB*)a1, (TCB::subroutine)a2, (void*)a3, (void*)a4);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
+//            if ((TCB::subroutine) a2 == nullptr){
+//                int ret = -1;
+//                set_a0(ret);
+//            } else {
+//
+//            }
         }
         else if (a0 == THREAD_EXIT){
             int ret = TCB::exit();
-            set_a0(ret);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
             TCB::dispatch();
         }
         else if (a0 == THREAD_DISPATCH){
@@ -99,55 +105,69 @@ void riscv::handleSupervisorTrap() {
         }
         else if (a0 == SEM_OPEN){
             int ret = mySemaphore::open((mySemaphore**)a1, a2);
-            set_a0(ret);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == SEM_CLOSE){
             mySemaphore* handle = (mySemaphore*)a1;
             int ret = handle->close();
-            set_a0(ret);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == SEM_WAIT){
             mySemaphore* handle = (mySemaphore*)a1;
             int ret = handle->wait();
-            set_a0(ret);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == SEM_SIGNAL){
             mySemaphore* handle = (mySemaphore*)a1;
             int ret = handle->signal();
-            set_a0(ret);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == SEM_TIMEDWAIT){
             mySemaphore* handle = (mySemaphore*)a1;
             int ret = handle->timed_wait((time_t)a2);
-            set_a0(ret);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == SEM_TRYWAIT){
             mySemaphore* handle = (mySemaphore*)a1;
             int ret = handle->try_wait();
-            set_a0(ret);
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == TIME_SLEEP){
             Scheduler::putSleeping(TCB::running, (size_t)a1);
             TCB::dispatch();
-            set_a0(0);
+            int ret = 0;
+            __asm__ volatile ("mv t0, %0" : : "r"(ret));
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == GETC){
-            char c = myConsole::get_out();
-            set_a0(c);
+//            char c = myConsole::get_out();
+//            set_a0(c);
+            char c = __getc();
+            __asm__ volatile ("mv t0, %0" : : "r"(c));
+            __asm__ volatile ("sd t0, 80(fp)");
         }
         else if (a0 == PUTC){
-            myConsole::put_out(a1);
-            myConsole::handler();
+//            myConsole::put_out(a1);
+//            myConsole::handler();
+            __putc(a1);
         }
         else {
+            __putc('Z');
             // unknown code
-            printString("UNKNOWN CODE!\n");
+//            printString("UNKNOWN CODE!\n");
         }
 
         w_sstatus(sstatus);
         w_sepc(sepc);
     }
     else if (scause == SUP_SOFT_INT){
+        __putc('5');
         // interrupt: yes, supervisor software interrupt (timer)
         // timer frequency: 10 Hz
         TCB::timeSliceCnt++;
@@ -164,10 +184,12 @@ void riscv::handleSupervisorTrap() {
         mc_sip(SIP_SSIP);
     }
     else if (scause == SUP_EXT_INT){
+        __putc('6');
         // interrupt: yes, supervisor external interrupt (console)
         int ret = plic_claim();
         if (ret == KEYBOARD_INT_NO){
-            myConsole::handler();
+//            myConsole::handler();
+            console_handler();
             plic_complete(KEYBOARD_INT_NO);
         }
     }
@@ -175,13 +197,16 @@ void riscv::handleSupervisorTrap() {
         __putc('C');
         // unexpected trap cause
     }
+
+    printString("\nSCAUSE AFTER INTERRUPT: ");
+    printInt((uint64)scause);
 }
 
 void riscv::pop_spp_spie() {
     if (userMode){
         mc_sstatus(SSTATUS_SPP);
     } else {
-        ms_sstatus(SSTATUS_SPP);
+        ms_sstatus(SSTATUS_SIE);
     }
     __asm__ volatile ("csrw sepc, ra");
     __asm__ volatile ("sret");
@@ -198,6 +223,6 @@ void riscv::close_riscv_emulation() {
     __asm__ volatile ("sw t0, 0(t1)");
 }
 
-void riscv::set_a0(volatile uint64 val) {
-    __asm__ volatile ("mv a0, %[val]" : : [val] "r"(val));
-}
+//void riscv::set_a0(volatile uint64 val) {
+//    __asm__ volatile ("mv a0, %[val]" : : [val] "r"(val));
+//}

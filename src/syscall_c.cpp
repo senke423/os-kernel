@@ -3,7 +3,6 @@
 //
 
 #include "../h/syscall_c.hpp"
-#include "../lib/printing.hpp"
 
 void* mem_alloc(size_t size){
     if (size == 0)
@@ -14,12 +13,12 @@ void* mem_alloc(size_t size){
     // take ceil of quotient
     size % MEM_BLOCK_SIZE == 0 ? no_of_blocks = size / MEM_BLOCK_SIZE : no_of_blocks = size / MEM_BLOCK_SIZE + 1;
 
-    printString("\n");
 
     constexpr volatile uint64 code = 0x01;
     __asm__ volatile ("mv a1, %[no_of_blocks]" : : [no_of_blocks] "r"(no_of_blocks));
     __asm__ volatile ("mv a0, %[code]" : : [code] "r"(code));
     __asm__ volatile ("ecall");
+
 
     void* adr;
     __asm__ volatile ("mv %[adr], a0" : [adr] "=r"(adr));
@@ -29,8 +28,6 @@ void* mem_alloc(size_t size){
 int mem_free(void* alloc_space){
     if (alloc_space == nullptr)
         return NULL_PTR_ERR;
-
-    __putc('\n');
 
     volatile uint64 code = 0x02;
     __asm__ volatile ("mv a1, %[alloc_space]" : : [alloc_space] "r"(alloc_space));
@@ -48,8 +45,6 @@ int thread_create(thread_t *handle, void (*start_routine)(void *), void *arg) {
     void* stack = start_routine == nullptr ? nullptr : MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE);
     if (!stack)
         return -1;
-
-    __putc('\n');
 
     __asm__ volatile ("mv a4, %[stack]" : : [stack] "r"(stack));
     __asm__ volatile ("mv a3, %[arg]" : : [arg] "r"(arg));
@@ -71,6 +66,11 @@ int thread_exit() {
 }
 
 void thread_dispatch() {
+    __putc('\n');
+    __putc('\n');
+    __putc('Q');
+    __putc('\n');
+    __putc('\n');
     volatile uint64 code = 0x13;
     __asm__ volatile ("mv a0, %[code]" : : [code] "r"(code));
     __asm__ volatile ("ecall");

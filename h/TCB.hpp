@@ -8,7 +8,6 @@
 #include "../lib/hw.h"
 #include "Scheduler.hpp"
 #include "riscv.hpp"
-#include "../lib/printing.hpp"
 
 class TCB {
 public:
@@ -24,13 +23,15 @@ public:
 
     uint64 getTimeSlice() const { return timeSlice; }
     static int createThread(TCB* handle, subroutine subroutine, void* arg, void* stack_space);
+    static TCB* createThread(subroutine subroutine);
 
     struct Context {
         uint64 ra;
         uint64 sp;
     };
     static uint64 timeSliceCnt;
-
+    static void dispatch();
+    static void yield();
 private:
     friend class riscv;
     friend class mySemaphore;
@@ -48,17 +49,20 @@ private:
         arg(arg),
         body(body),
         timeSlice(timeSlice),
-        context({ (uint64) &thread_wrapper,
-                  (uint64) stack_space
-        }),
+
         finished(false),
         blocked(false),
         asleep(false)
-    {}
+    {
+
+        if (stack_space == nullptr){
+            stack_space = new uint64[DEFAULT_STACK_SIZE];
+        }
+        context = {(uint64)&thread_wrapper, (uint64)stack_space};
+    }
 
     static int exit();
-    static void dispatch();
-    static void yield();
+
     static void thread_wrapper();
 
 };

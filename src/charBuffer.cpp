@@ -36,14 +36,10 @@ char charBuffer::take() {
 }
 
 charBuffer::~charBuffer() {
-    printString("charBuffer destructor\n");
     space_avail->close();
-    printString("A\n");
     item_avail->close();
-    printString("B\n");
     mutex->close();
 
-    printString("The point of many deletions.\n");
     delete space_avail;
     delete item_avail;
     delete mutex;

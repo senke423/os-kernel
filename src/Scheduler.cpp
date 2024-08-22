@@ -8,7 +8,7 @@ LinkedList<TCB*> Scheduler::ready_threads = LinkedList<TCB*>();
 LinkedList<Scheduler::SleepingThread*> Scheduler::sleeping_threads = LinkedList<SleepingThread*>();
 
 TCB *Scheduler::get() {
-    return ready_threads.remove((size_t)0);
+    return ready_threads.removeIndex(0);
 }
 
 void Scheduler::put(TCB *thread) {

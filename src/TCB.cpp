@@ -3,6 +3,7 @@
 //
 
 #include "../h/TCB.hpp"
+#include "../test/printing.hpp"
 
 TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCnt = 0;
@@ -11,16 +12,19 @@ void TCB::dispatch() {
     TCB::timeSliceCnt = 0;
     TCB* old = running;
     if (!old->isFinished() && !old->isAsleep() && !old->isBlocked()){
-        Scheduler::put(old);
-    }
+        if (body != nullptr)
+            Scheduler::put(old);
 
-    contextSwitch(&old->context, &running->context);
+    }
+    running = Scheduler::get();
+
+    if (old != running){
+        contextSwitch(&old->context, &running->context);
+    }
 }
 
 int TCB::createThread(TCB *handle, TCB::subroutine subroutine, void *arg, void *stack_space) {
-    printString("TCB createThread\n");
     handle = new TCB(subroutine, arg, stack_space, DEFAULT_TIME_SLICE);
-    printString("TCB thread created");
 
     // put this newly created thread in the Scheduler ready_threads
     Scheduler::put(handle);
@@ -35,10 +39,16 @@ void TCB::thread_wrapper() {
 }
 
 void TCB::yield() {
+    volatile uint64 code = 0x13;
+    __asm__ volatile ("mv a0, %[code]" : : [code] "r"(code));
     __asm__ volatile ("ecall");
 }
 
 int TCB::exit() {
     running->setFinished(true);
     return 0;
+}
+
+TCB *TCB::createThread(TCB::subroutine subroutine) {
+    return new TCB(subroutine, nullptr, nullptr, DEFAULT_TIME_SLICE);
 }
