@@ -1,5 +1,5 @@
 .global contextSwitch
-.type contextSwitch, @function
+
 contextSwitch:
     # a0 -> &old->context
     # a1 -> &running->context

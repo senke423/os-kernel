@@ -9,6 +9,7 @@
 #include "../lib/console.h"
 //#include "../lib/myPrint.hpp"
 #include "../test/printing.hpp"
+#include "../h/worker.hpp"
 
 
 extern void userMain();
@@ -16,30 +17,41 @@ extern void myUserMain();
 extern "C" void supervisorTrap();
 
 void init_kernel(){
-    printString("--- KERNEL INIT STARTING ---\n\n");
-
     MemoryAllocator::initialize();
-
     riscv::w_stvec((uint64)supervisorTrap);
-//    riscv::ms_sstatus(riscv::SSTATUS_SIE);
-//    uint64 mask = riscv::SSTATUS_SIE;
-//    __asm__ volatile("csrw sstatus, %0" : : "r" (mask));
-
-//    myConsole::console_init();
-
-    printString("--- KERNEL INIT COMPLETE ---\n\n");
 }
 
 void finalize_kernel(){
-//    myConsole::console_finalize();
+    riscv::close_riscv_emulation();
 }
 
 void main(){
     init_kernel();
 
 //    userMain();
-    myUserMain();
+//    myUserMain();
+
+    TCB* threads[3];
+    int ret = thread_create(&threads[0], nullptr, nullptr);
+    TCB::running = threads[0];
+
+    ret += thread_create(&threads[1], workerBodyA, nullptr);
+    printString("ThreadA created!\n");
+    ret += thread_create(&threads[2], workerBodyB, nullptr);
+    printString("ThreadB created!\n");
+
+    printString("RET AFTER THREADS HAVE BEEN CREATED: ");
+    printInt(ret);
+
+    while (!(threads[1]->isFinished() && threads[2]->isFinished())){
+        thread_dispatch();
+    }
+
+    for (auto &thread : threads){
+        delete thread;
+    }
+    printString("FINISHED!\n");
+
 
     finalize_kernel();
-    riscv::close_riscv_emulation();
 }

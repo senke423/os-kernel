@@ -138,19 +138,9 @@ private:
 
     const static uint32 KEYBOARD_INT_NO = 0xa;
 
-    static uint64 retrieve_param(uint8 offset);
-//    static void set_a0(uint64 val);
     static void handleSupervisorTrap();
 
     static bool userMode;
 };
-
-inline uint64 riscv::retrieve_param(volatile uint8 index) {
-    uint64 volatile param;
-    uint64 volatile offset = index*8 + 80;
-    __asm__ volatile ("add t0, %[offset], s0" : : [offset]"r"(offset) : "t0");
-    __asm__ volatile ("ld %0, 0(t0)" : "=r"(param));
-    return param;
-}
 
 #endif //INC_41F_OS_PROJEKAT_RISCV_HPP

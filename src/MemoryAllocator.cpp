@@ -3,16 +3,11 @@
 //
 
 #include "../h/MemoryAllocator.hpp"
-#include "../lib/myPrint.hpp"
 
 MemoryAllocator::Chunk* MemoryAllocator::free_head = nullptr;
 
 void *MemoryAllocator::mem_alloc(size_t size) {
-    printString("In bytes: ");
-    printInt(size);
     size % MEM_BLOCK_SIZE == 0 ? size = size/MEM_BLOCK_SIZE : size = size/MEM_BLOCK_SIZE + 1;
-    printString("How many blocks? ");
-    printInt(size);
 
     Chunk* prev = nullptr;
     Chunk* iter = free_head;
@@ -53,10 +48,6 @@ void *MemoryAllocator::mem_alloc(size_t size) {
     }
 
     sel->size = size;
-
-    void* my_life_is_pain = (void*)sel;
-    printString("MAL VAL: ");
-    printInt((uint64)my_life_is_pain);
 
     return (void*)sel;
 }
@@ -143,7 +134,6 @@ int MemoryAllocator::mem_free(void* chunk) {
             sel->prev->next = sel;
     }
 
-    printString("SUCCESS");
     return 0;
 }
 
@@ -152,10 +142,4 @@ void MemoryAllocator::initialize() {
     free_head->next = nullptr;
     free_head->prev = nullptr;
     free_head->size = ((char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - sizeof(Chunk))/MEM_BLOCK_SIZE;
-
-    printString("MemAlloc Initialized. Blocks available: ");
-    printInt(free_head->size);
-    printString("Size in bytes: ");
-    printInt(free_head->size*MEM_BLOCK_SIZE);
-    printString("\n\n");
 }

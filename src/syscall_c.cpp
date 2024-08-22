@@ -42,10 +42,17 @@ int mem_free(void* alloc_space){
 int thread_create(thread_t *handle, void (*start_routine)(void *), void *arg) {
     volatile uint64 code = 0x11;
 
-    void* stack = start_routine == nullptr ? nullptr : MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE);
-    if (!stack)
-        return -1;
+    uint64* stack = nullptr;
+    if (start_routine != nullptr){
+        stack = new uint64[DEFAULT_STACK_SIZE];
 
+        if (!stack)
+            return -1;
+    }
+
+
+    printString("STACK SYSCALL: ");
+    printInt((uint64)stack, 16, 0);
     __asm__ volatile ("mv a4, %[stack]" : : [stack] "r"(stack));
     __asm__ volatile ("mv a3, %[arg]" : : [arg] "r"(arg));
     __asm__ volatile ("mv a2, %[start_routine]" : : [start_routine] "r"(start_routine));
@@ -66,11 +73,6 @@ int thread_exit() {
 }
 
 void thread_dispatch() {
-    __putc('\n');
-    __putc('\n');
-    __putc('Q');
-    __putc('\n');
-    __putc('\n');
     volatile uint64 code = 0x13;
     __asm__ volatile ("mv a0, %[code]" : : [code] "r"(code));
     __asm__ volatile ("ecall");

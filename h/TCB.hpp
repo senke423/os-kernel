@@ -8,6 +8,7 @@
 #include "../lib/hw.h"
 #include "Scheduler.hpp"
 #include "riscv.hpp"
+#include "../test/printing.hpp"
 
 class TCB {
 public:
@@ -22,8 +23,7 @@ public:
     void setAsleep(bool val) { asleep = val; }
 
     uint64 getTimeSlice() const { return timeSlice; }
-    static int createThread(TCB* handle, subroutine subroutine, void* arg, void* stack_space);
-    static TCB* createThread(subroutine subroutine);
+    static int createThread(TCB** handle, subroutine subroutine, void* arg, void* stack_space);
 
     struct Context {
         uint64 ra;
@@ -33,6 +33,8 @@ public:
     static void dispatch();
     static void yield();
 private:
+    static int cnt;
+    int id;
     friend class riscv;
     friend class mySemaphore;
 
@@ -40,25 +42,26 @@ private:
 
     subroutine body;
     uint64 timeSlice;
+    uint64* stack;
     Context context;
     bool finished;
     bool blocked;
     bool asleep;
 
-    explicit TCB(subroutine body, void* arg, void* stack_space, uint64 timeSlice) :
+    TCB(subroutine body, void* arg, uint64* stack_space, uint64 timeSlice) :
+        id(cnt++),
         arg(arg),
         body(body),
         timeSlice(timeSlice),
-
+        stack(stack_space),
+        context({body != nullptr ? (uint64)&thread_wrapper : 0,
+                 stack_space != nullptr ? (uint64)((char*)stack_space + DEFAULT_STACK_SIZE) : 0}),
         finished(false),
         blocked(false),
         asleep(false)
     {
-
-        if (stack_space == nullptr){
-            stack_space = new uint64[DEFAULT_STACK_SIZE];
-        }
-        context = {(uint64)&thread_wrapper, (uint64)stack_space};
+//        printString("STACK KONSTRUKTOR: ");
+//        printInt((uint64)stack_space, 16, 0);
     }
 
     static int exit();

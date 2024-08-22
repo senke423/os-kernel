@@ -117,8 +117,7 @@ size_t LinkedList<Type>::getLen() {
 #include "../test/printing.hpp"
 template<typename Type>
 Type LinkedList<Type>::removeIndex(size_t index) {
-    printString("LEN BEFORE: ");
-    printInt(len);
+
 
     if (index >= len || !len)
         return nullptr;
@@ -146,8 +145,7 @@ Type LinkedList<Type>::removeIndex(size_t index) {
 
     len--;
     delete iter;
-    printString("LEN AFTGER: ");
-    printInt(len);
+
     return ret;
 }
 

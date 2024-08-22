@@ -13,24 +13,7 @@
 
 void myUserMain(){
 
-    TCB* threads[3];
-    threads[0] = TCB::createThread(nullptr);
-    TCB::running = threads[0];
 
-    threads[1] = TCB::createThread(workerBodyA);
-    printString("ThreadA created!\n");
-    threads[2] = TCB::createThread(workerBodyB);
-    printString("ThreadB created!\n");
-
-
-    while (!(threads[1]->isFinished() && threads[2]->isFinished())){
-        TCB::yield();
-    }
-
-    for (auto &thread : threads){
-        delete thread;
-    }
-    printString("FINISHED!\n");
 
 //    int* niz = new int[5];
 //    printString("Ovo je u myUserMain: ");

@@ -5,29 +5,35 @@
 #include "../h/TCB.hpp"
 #include "../test/printing.hpp"
 
+int TCB::cnt = 0;
 TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCnt = 0;
 
 void TCB::dispatch() {
+    printString("\n\nDISPATCH\n\n");
+
     TCB::timeSliceCnt = 0;
     TCB* old = running;
     if (!old->isFinished() && !old->isAsleep() && !old->isBlocked()){
-        if (body != nullptr)
-            Scheduler::put(old);
-
+        Scheduler::put(old);
     }
     running = Scheduler::get();
 
     if (old != running){
+        printString("\n\nCONTEXT SWITCHING\n\n");
         contextSwitch(&old->context, &running->context);
     }
 }
 
-int TCB::createThread(TCB *handle, TCB::subroutine subroutine, void *arg, void *stack_space) {
-    handle = new TCB(subroutine, arg, stack_space, DEFAULT_TIME_SLICE);
+int TCB::createThread(TCB **handle, TCB::subroutine subroutine, void *arg, void *stack_space) {
+    *handle = new TCB(subroutine, arg, (uint64*)stack_space, DEFAULT_TIME_SLICE);
+    if (*handle == nullptr)
+        return -1;
 
     // put this newly created thread in the Scheduler ready_threads
-    Scheduler::put(handle);
+    if (subroutine != nullptr){
+        Scheduler::put(*handle);
+    }
     return 0;
 }
 
@@ -47,8 +53,4 @@ void TCB::yield() {
 int TCB::exit() {
     running->setFinished(true);
     return 0;
-}
-
-TCB *TCB::createThread(TCB::subroutine subroutine) {
-    return new TCB(subroutine, nullptr, nullptr, DEFAULT_TIME_SLICE);
 }

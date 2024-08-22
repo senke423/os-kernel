@@ -6,7 +6,7 @@
 # 32 "<command-line>" 2
 # 1 "src/contextSwitch.S"
 .global contextSwitch
-.type contextSwitch, @function
+
 contextSwitch:
     # a0 -> &old->context
     # a1 -> &running->context
