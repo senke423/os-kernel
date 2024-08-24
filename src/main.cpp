@@ -12,40 +12,41 @@
 
 extern void userMain();
 extern void myUserMain();
-extern "C" void supervisorTrap();
+extern "C" void vectorTable();
 
 void main(){
 
     MemoryAllocator::initialize();
-    riscv::w_stvec((uint64)supervisorTrap);
+    riscv::w_stvec((uint64)&vectorTable | 0b01);
+//    riscv::ms_sstatus(riscv::SSTATUS_SIE);
 
-//    char c = __getc();
-//    __putc(c);
-//    __putc('\n');
+//    char c = getc();
+//    putc(c);
+//    putc('\n');
 
-//    userMain();
+    userMain();
 
-    TCB* threads[3];
-    int ret = thread_create(&threads[0], nullptr, nullptr);
-    TCB::running = threads[0];
-
-    ret += thread_create(&threads[1], workerBodyA, nullptr);
-    printString("ThreadA created!\n");
-    ret += thread_create(&threads[2], workerBodyB, nullptr);
-    printString("ThreadB created!\n");
-
-    printString("RET AFTER THREADS HAVE BEEN CREATED: ");
-    printInt(ret);
-    printString("\n");
-
-    while (!(threads[1]->isFinished() && threads[2]->isFinished())){
-        thread_dispatch();
-    }
-
-    for (auto &thread : threads){
-        delete thread;
-    }
-    printString("FINISHED!\n");
+//    TCB* threads[3];
+//    int ret = thread_create(&threads[0], nullptr, nullptr);
+//    TCB::running = threads[0];
+//
+//    ret += thread_create(&threads[1], workerBodyA, nullptr);
+//    printString("ThreadA created!\n");
+//    ret += thread_create(&threads[2], workerBodyB, nullptr);
+//    printString("ThreadB created!\n");
+//
+//    printString("RET AFTER THREADS HAVE BEEN CREATED: ");
+//    printInt(ret);
+//    printString("\n");
+//
+//    while (!(threads[1]->isFinished() && threads[2]->isFinished())){
+//        thread_dispatch();
+//    }
+//
+//    for (auto &thread : threads){
+//        delete thread;
+//    }
+//    printString("FINISHED!\n");
 
     riscv::close_riscv_emulation();
 }

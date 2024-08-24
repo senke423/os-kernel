@@ -129,10 +129,9 @@ void riscv::handleSupervisorTrap() {
 
         riscv::close_riscv_emulation();
     }
-    else if (scause == SUP_EXT_INT){
-        printString("SUP EXT INT!\n");
-        console_handler();
-    }
+//    else if (scause == SUP_EXT_INT){
+//
+//    }
     else {
         printString("\nInstruction access fault.\n");
         printString("sepc value: ");
@@ -161,4 +160,12 @@ void riscv::close_riscv_emulation() {
     __asm__ volatile ("addi t0, %[close_code], 0" : : [close_code] "r"(close_code));
     __asm__ volatile ("li t1, 0x100000");
     __asm__ volatile ("sw t0, 0(t1)");
+}
+
+void riscv::handleConsoleTrap() {
+    console_handler();
+}
+
+void riscv::handleTimerTrap() {
+    mc_sip(SIP_SSIP);
 }

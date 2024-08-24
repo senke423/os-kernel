@@ -138,6 +138,8 @@ private:
     const static uint32 KEYBOARD_INT_NO = 0xa;
 
     static void handleSupervisorTrap();
+    static void handleConsoleTrap();
+    static void handleTimerTrap();
 
     static bool userMode;
 };
