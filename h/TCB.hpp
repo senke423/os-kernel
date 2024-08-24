@@ -8,7 +8,6 @@
 #include "../lib/hw.h"
 #include "Scheduler.hpp"
 #include "riscv.hpp"
-#include "../test/printing.hpp"
 
 class TCB {
 public:
@@ -60,8 +59,6 @@ private:
         blocked(false),
         asleep(false)
     {
-//        printString("STACK KONSTRUKTOR: ");
-//        printInt((uint64)stack_space, 16, 0);
     }
 
     static int exit();

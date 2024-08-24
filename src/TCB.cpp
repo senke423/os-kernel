@@ -10,7 +10,6 @@ TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCnt = 0;
 
 void TCB::dispatch() {
-    printString("\n\nDISPATCH\n\n");
 
     TCB::timeSliceCnt = 0;
     TCB* old = running;
@@ -20,7 +19,6 @@ void TCB::dispatch() {
     running = Scheduler::get();
 
     if (old != running){
-        printString("\n\nCONTEXT SWITCHING\n\n");
         contextSwitch(&old->context, &running->context);
     }
 }

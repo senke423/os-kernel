@@ -50,9 +50,6 @@ int thread_create(thread_t *handle, void (*start_routine)(void *), void *arg) {
             return -1;
     }
 
-
-    printString("STACK SYSCALL: ");
-    printInt((uint64)stack, 16, 0);
     __asm__ volatile ("mv a4, %[stack]" : : [stack] "r"(stack));
     __asm__ volatile ("mv a3, %[arg]" : : [arg] "r"(arg));
     __asm__ volatile ("mv a2, %[start_routine]" : : [start_routine] "r"(start_routine));

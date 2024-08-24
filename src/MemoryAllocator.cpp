@@ -28,8 +28,9 @@ void *MemoryAllocator::mem_alloc(size_t size) {
     if (!sel)
         return nullptr;
 
-    if (sel->size == size) {
+    if (sel->size == size || (sel->size - size)*MEM_BLOCK_SIZE < sizeof(Chunk)) {
         // no fragmentation
+
         if (prev){
             prev->next = sel->next;
         }
@@ -45,9 +46,10 @@ void *MemoryAllocator::mem_alloc(size_t size) {
             prev->next = new_free_fragment;
         else
             free_head = new_free_fragment;
+
+        sel->size = size;
     }
 
-    sel->size = size;
 
     return (void*)sel;
 }

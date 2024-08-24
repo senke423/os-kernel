@@ -4,10 +4,8 @@
 
 #include "../h/MemoryAllocator.hpp"
 #include "../h/LinkedList.hpp"
-#include "../h/myConsole.hpp"
 #include "../h/riscv.hpp"
 #include "../lib/console.h"
-//#include "../lib/myPrint.hpp"
 #include "../test/printing.hpp"
 #include "../h/worker.hpp"
 
@@ -16,17 +14,14 @@ extern void userMain();
 extern void myUserMain();
 extern "C" void supervisorTrap();
 
-void init_kernel(){
+void main(){
+
     MemoryAllocator::initialize();
     riscv::w_stvec((uint64)supervisorTrap);
-}
 
-void finalize_kernel(){
-    riscv::close_riscv_emulation();
-}
-
-void main(){
-    init_kernel();
+//    char c = __getc();
+//    __putc(c);
+//    __putc('\n');
 
 //    userMain();
 //    myUserMain();
@@ -42,6 +37,7 @@ void main(){
 
     printString("RET AFTER THREADS HAVE BEEN CREATED: ");
     printInt(ret);
+    printString("\n");
 
     while (!(threads[1]->isFinished() && threads[2]->isFinished())){
         thread_dispatch();
@@ -52,6 +48,5 @@ void main(){
     }
     printString("FINISHED!\n");
 
-
-    finalize_kernel();
+    riscv::close_riscv_emulation();
 }

@@ -114,7 +114,6 @@ size_t LinkedList<Type>::getLen() {
     return len;
 }
 
-#include "../test/printing.hpp"
 template<typename Type>
 Type LinkedList<Type>::removeIndex(size_t index) {
 
@@ -183,17 +182,6 @@ Type LinkedList<Type>::peek(size_t index) {
     Type ret = curr->data;
     return ret;
 }
-
-template<typename Type>
-void LinkedList<Type>::print() {
-
-//    Element* curr = head;
-//    while (head != nullptr){
-//        putc(curr->data);
-//        putc(' ');
-//    }
-}
-
 
 
 template<typename Type>

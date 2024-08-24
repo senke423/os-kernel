@@ -15,9 +15,6 @@ void riscv::handleSupervisorTrap() {
     uint64 stvec = r_stvec();
     uint64 sepc = r_sepc();
 
-    printString("\nPrekidna rutina, scause: ");
-    printInt(scause, 16, 0);
-
     if (scause == ECALL_USER_MODE || scause == ECALL_KERNEL_MODE){
         uint64 volatile a0; // code
         __asm__ volatile ("ld %0, 80(fp)" : "=r"(a0));
@@ -33,10 +30,6 @@ void riscv::handleSupervisorTrap() {
         uint64 sepc = r_sepc() + 4; // +4 so that we return to the address behind the "ecall" address
         uint64 sstatus = r_sstatus();
 
-
-        printString("a0 code: ");
-        printInt(a0, 16, 0);
-        __putc('\n');
 
         if (a0 == MEM_ALLOC){
             a1 *= MEM_BLOCK_SIZE; // convert to bytes
@@ -118,9 +111,8 @@ void riscv::handleSupervisorTrap() {
             __putc(a1);
         }
         else {
-            printString("\nUNKNOWN a0 CODE.\n");
             // unknown code
-//            printString("UNKNOWN CODE!\n");
+            close_riscv_emulation();
         }
 
         w_sstatus(sstatus);
@@ -150,16 +142,25 @@ void riscv::handleSupervisorTrap() {
 
         riscv::close_riscv_emulation();
     }
+    else if (scause == SUP_EXT_INT){
+        printString("SUP EXT INT!\n");
+        console_handler();
+    }
     else {
-        printString("\nUnknown code.\n");
+        printString("\nInstruction access fault.\n");
         printString("sepc value: ");
         printInt((uint64)sepc, 16, 0);
         // unexpected trap cause
+        close_riscv_emulation();
     }
 }
 
 void riscv::pop_spp_spie() {
-    mc_sstatus(SSTATUS_SPP);
+    if (userMode){
+        mc_sstatus(SSTATUS_SPP);
+    } else {
+        ms_sstatus(SSTATUS_SPP);
+    }
     __asm__ volatile ("csrw sepc, ra");
     __asm__ volatile ("sret");
 }

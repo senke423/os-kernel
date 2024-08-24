@@ -9,7 +9,6 @@
 #include "../lib/console.h"
 #include "MemoryAllocator.hpp"
 #include "TCB.hpp"
-#include "myConsole.hpp"
 
 extern "C" void pushRegisters();
 extern "C" void popRegisters();
