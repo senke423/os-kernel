@@ -22,10 +22,12 @@ void main(){
     MemoryAllocator::initialize();
     riscv::w_stvec((uint64)&vectorTable | 0b01);
 
+
     TCB* kernel_thread;
     thread_create(&kernel_thread, nullptr, nullptr);
     TCB::running = kernel_thread;
 
+    riscv::setMode(true);
     TCB* user_thread;
     thread_create(&user_thread, mainWrapper, nullptr);
 
@@ -34,6 +36,7 @@ void main(){
     }
 
     delete user_thread;
+    riscv::setMode(false);
 
     riscv::close_riscv_emulation();
 }
