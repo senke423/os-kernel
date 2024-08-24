@@ -24,7 +24,6 @@ void main(){
 //    __putc('\n');
 
 //    userMain();
-//    myUserMain();
 
     TCB* threads[3];
     int ret = thread_create(&threads[0], nullptr, nullptr);

@@ -83,22 +83,9 @@ void riscv::handleSupervisorTrap() {
             __asm__ volatile ("mv t0, %0" : : "r"(ret));
             __asm__ volatile ("sd t0, 80(fp)");
         }
-        else if (a0 == SEM_TIMEDWAIT){
-            mySemaphore* handle = (mySemaphore*)a1;
-            int ret = handle->timed_wait((time_t)a2);
-            __asm__ volatile ("mv t0, %0" : : "r"(ret));
-            __asm__ volatile ("sd t0, 80(fp)");
-        }
         else if (a0 == SEM_TRYWAIT){
             mySemaphore* handle = (mySemaphore*)a1;
             int ret = handle->try_wait();
-            __asm__ volatile ("mv t0, %0" : : "r"(ret));
-            __asm__ volatile ("sd t0, 80(fp)");
-        }
-        else if (a0 == TIME_SLEEP){
-            Scheduler::putSleeping(TCB::running, (size_t)a1);
-            TCB::dispatch();
-            int ret = 0;
             __asm__ volatile ("mv t0, %0" : : "r"(ret));
             __asm__ volatile ("sd t0, 80(fp)");
         }
