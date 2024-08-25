@@ -106,7 +106,7 @@ void riscv::handleSupervisorTrap() {
         w_sepc(sepc);
     }
     else if (scause == ILLEGAL_INSTR){
-        printString("UNAUTHORIZED READ!\nstvec: ");
+        printString("ILLEGAL INSTR!\nstvec: ");
         printInt(stvec, 16, 0);
         printString("sepc: ");
         printInt(sepc, 16, 0);
@@ -129,9 +129,6 @@ void riscv::handleSupervisorTrap() {
 
         riscv::close_riscv_emulation();
     }
-//    else if (scause == SUP_EXT_INT){
-//
-//    }
     else {
         printString("\nInstruction access fault.\n");
         printString("sepc value: ");

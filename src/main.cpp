@@ -22,7 +22,6 @@ void main(){
     MemoryAllocator::initialize();
     riscv::w_stvec((uint64)&vectorTable | 0b01);
 
-
     TCB* kernel_thread;
     thread_create(&kernel_thread, nullptr, nullptr);
     TCB::running = kernel_thread;

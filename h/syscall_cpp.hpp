@@ -25,6 +25,8 @@ private:
     thread_t myHandle;
     void (*body)(void*);
     void* arg;
+
+    static void wrapper(void* arg);
 };
 
 class Semaphore {

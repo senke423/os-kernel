@@ -20,6 +20,8 @@ void operator delete[](void* alloc_space) noexcept {
     mem_free(alloc_space);
 }
 
+// THREAD -----------------------------------------------------------------------
+
 Thread::Thread(void (*body)(void *), void *arg) {
     this->myHandle = nullptr;
     this->body = body;
@@ -38,16 +40,28 @@ int Thread::start() {
     if (myHandle != nullptr)
         return -1;
 
-    return thread_create(&myHandle, body, arg);
+    if (!arg)
+        return thread_create(&myHandle, body, (void*)this);
+    else
+        return thread_create(&myHandle, body, arg);
 }
 
 Thread::Thread() {
-
+    myHandle = nullptr;
+    body = &wrapper;
+    arg = nullptr;
 }
 
 int Thread::sleep(time_t) {
     return 0;
 }
+
+void Thread::wrapper(void *arg) {
+    Thread* t = (Thread*)arg;
+    t->run();
+}
+
+// THREAD -----------------------------------------------------------------------
 
 Semaphore::Semaphore(unsigned int init) {
     sem_open(&myHandle, init);
