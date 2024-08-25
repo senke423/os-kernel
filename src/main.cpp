@@ -7,7 +7,6 @@
 #include "../h/riscv.hpp"
 #include "../lib/console.h"
 #include "../test/printing.hpp"
-#include "../h/worker.hpp"
 
 
 extern void userMain();
