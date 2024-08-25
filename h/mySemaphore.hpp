@@ -16,7 +16,7 @@ public:
     int close();
     int wait();
     int signal();
-    int timed_wait(time_t timeout);
+//    int timed_wait(time_t timeout);
     int try_wait();
 
 private:

@@ -6,7 +6,7 @@
 
 int mySemaphore::open(mySemaphore **handle, unsigned int init) {
     *handle = new mySemaphore(init);
-    if (!*handle)
+    if (*handle == nullptr)
         return -1;
     return 0;
 }
@@ -53,7 +53,6 @@ int mySemaphore::signal() {
     if (!is_open)
         return SEM_NULL_ERR;
 
-    ++val;
 
     // UNBLOCK THREAD AND PUSH TO READY QUEUE
     if (blocked_threads.getLen() > 0){
@@ -62,37 +61,37 @@ int mySemaphore::signal() {
 
         Scheduler::put(temp);
     } else {
-        return SEM_UNPAIRED_SIG;
+        ++val;
     }
 
     return 0;
 }
 
-int mySemaphore::timed_wait(time_t timeout) {
-
-    if (!is_open)
-        return SEM_NULL_ERR;
-
-    if (val > 0){
-        --val;
-    } else {
-        TCB::running->setBlocked(true);
-        blocked_threads.push(TCB::running);
-        time_sleep(timeout);
-
-        if (!is_open)
-            return SEM_DEAD;
-
-        if (TCB::running->isBlocked()){
-            blocked_threads.pop();
-            TCB::running->setBlocked(false);
-
-            return TIMEOUT;
-        }
-    }
-
-    return 0;
-}
+//int mySemaphore::timed_wait(time_t timeout) {
+//
+//    if (!is_open)
+//        return SEM_NULL_ERR;
+//
+//    if (val > 0){
+//        --val;
+//    } else {
+//        TCB::running->setBlocked(true);
+//        blocked_threads.push(TCB::running);
+//        time_sleep(timeout);
+//
+//        if (!is_open)
+//            return SEM_DEAD;
+//
+//        if (TCB::running->isBlocked()){
+//            blocked_threads.pop();
+//            TCB::running->setBlocked(false);
+//
+//            return TIMEOUT;
+//        }
+//    }
+//
+//    return 0;
+//}
 
 int mySemaphore::try_wait() {
     if (!is_open)

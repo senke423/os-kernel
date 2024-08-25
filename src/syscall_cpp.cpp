@@ -20,8 +20,6 @@ void operator delete[](void* alloc_space) noexcept {
     mem_free(alloc_space);
 }
 
-// THREAD -----------------------------------------------------------------------
-
 Thread::Thread(void (*body)(void *), void *arg) {
     this->myHandle = nullptr;
     this->body = body;
@@ -57,11 +55,16 @@ int Thread::sleep(time_t) {
 }
 
 void Thread::wrapper(void *arg) {
+    // used when the Thread() constructor is used
+
+    // this wrapper is used so that the signature is the same as
+    // the body signature, i.e. a void function that has one void* argument
+    // void (*body)(void*)
+
+    // here, the argument is `this`
     Thread* t = (Thread*)arg;
     t->run();
 }
-
-// THREAD -----------------------------------------------------------------------
 
 Semaphore::Semaphore(unsigned int init) {
     sem_open(&myHandle, init);
