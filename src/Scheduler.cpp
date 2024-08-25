@@ -3,7 +3,6 @@
 //
 
 #include "../h/Scheduler.hpp"
-#include "../test/printing.hpp"
 
 LinkedList<TCB*> Scheduler::ready_threads = LinkedList<TCB*>();
 LinkedList<Scheduler::SleepingThread*> Scheduler::sleeping_threads = LinkedList<SleepingThread*>();

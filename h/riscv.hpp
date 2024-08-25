@@ -6,9 +6,10 @@
 #define INC_41F_OS_PROJEKAT_RISCV_HPP
 
 #include "../lib/hw.h"
-#include "../lib/console.h"
 #include "MemoryAllocator.hpp"
 #include "TCB.hpp"
+#include "../h/mySemaphore.hpp"
+#include "../lib/console.h"
 
 extern "C" void pushRegisters();
 extern "C" void popRegisters();

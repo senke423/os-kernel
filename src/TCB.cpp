@@ -3,7 +3,6 @@
 //
 
 #include "../h/TCB.hpp"
-#include "../test/printing.hpp"
 
 int TCB::cnt = 0;
 TCB* TCB::running = nullptr;

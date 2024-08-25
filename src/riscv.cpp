@@ -3,17 +3,12 @@
 //
 
 #include "../h/riscv.hpp"
-#include "../lib/console.h"
-#include "../test/printing.hpp"
-
 
 bool riscv::userMode = false;
 
 void riscv::handleSupervisorTrap() {
 
     uint64 scause = r_scause();
-    uint64 stvec = r_stvec();
-    uint64 sepc = r_sepc();
 
     if (scause == ECALL_USER_MODE || scause == ECALL_KERNEL_MODE){
         uint64 volatile a0; // code
@@ -106,33 +101,15 @@ void riscv::handleSupervisorTrap() {
         w_sepc(sepc);
     }
     else if (scause == ILLEGAL_INSTR){
-        printString("ILLEGAL INSTR!\nstvec: ");
-        printInt(stvec, 16, 0);
-        printString("sepc: ");
-        printInt(sepc, 16, 0);
-
         riscv::close_riscv_emulation();
     }
     else if (scause == UNAUTH_READ){
-        printString("UNAUTHORIZED READ!\nstvec: ");
-        printInt(stvec, 16, 0);
-        printString("sepc: ");
-        printInt(sepc, 16, 0);
-
         riscv::close_riscv_emulation();
     }
     else if (scause == UNAUTH_WRITE){
-        printString("UNAUTHORIZED WRITE!\nstvec: ");
-        printInt(stvec, 16, 0);
-        printString("sepc: ");
-        printInt(sepc, 16, 0);
-
         riscv::close_riscv_emulation();
     }
     else {
-        printString("\nInstruction access fault.\n");
-        printString("sepc value: ");
-        printInt((uint64)sepc, 16, 0);
         // unexpected trap cause
         close_riscv_emulation();
     }

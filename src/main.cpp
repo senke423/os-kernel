@@ -5,8 +5,6 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../h/LinkedList.hpp"
 #include "../h/riscv.hpp"
-#include "../lib/console.h"
-#include "../test/printing.hpp"
 
 
 extern void userMain();
